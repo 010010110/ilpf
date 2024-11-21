@@ -18,6 +18,8 @@ type InventoryItem = {
   numArvores: number;
   erroPermitido: number;
   numParcelas: number;
+  nomeMedicao: string | null,
+  dataCriacao: any,
 };
 
 const ListScreen = () => {
@@ -92,7 +94,7 @@ const ListScreen = () => {
           <View>
             <Card style={styles.card} onPress={() => navigateToResult(item)}>
               <Card.Title
-                title={`Área: ${item.area} ha`}
+                title={`Nome Medição: ${item.nomeMedicao}`}
                 titleStyle={{ color: colors.background }}
                 right={() => (
                   <IconButton
@@ -103,6 +105,7 @@ const ListScreen = () => {
                 )}
               />
               <Card.Content>
+              <Text style={styles.cardText}>Área: {item.area} ha</Text>
                 <Text style={styles.cardText}>Distância entre renques: {item.distRenques} m</Text>
                 <Text style={styles.cardText}>Número de linhas no renque: {item.numLinhasRenque}</Text>
                 <Text style={styles.cardText}>Distância entre linhas: {item.distLinhas} m</Text>

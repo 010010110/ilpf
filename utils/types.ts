@@ -16,5 +16,7 @@ export type RootStackParamList = {
     comprimentoParcela: number;
     areaParcela: number;
     numArvoresPorParcela: number;
+    dataCriacao: string;
+    nomeMedicao: string | null;
   };
 };

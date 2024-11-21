@@ -11,12 +11,15 @@ type InventoryItem = {
   numArvores: number;
   erroPermitido: number;
   numParcelas: number;
+  dataCriacao: string; // Data da criação em formato texto
+  nomeMedicao: string | null; // Nome da medição, pode ser nulo
 };
 
 // Função para inicializar o banco de dados
 const initDb = async (): Promise<void> => {
   const db = await SQLite.openDatabaseAsync('inventory.db');
 
+  // Configurações iniciais e criação da tabela
   await db.execAsync(`
     PRAGMA journal_mode = WAL;
     CREATE TABLE IF NOT EXISTS inventory (
@@ -28,11 +31,30 @@ const initDb = async (): Promise<void> => {
       distArvores DECIMAL NOT NULL,
       numArvores INTEGER NOT NULL,
       erroPermitido DECIMAL NOT NULL,
-      numParcelas INTEGER NOT NULL
+      numParcelas INTEGER NOT NULL,
+      dataCriacao TEXT DEFAULT CURRENT_TIMESTAMP,
+      nomeMedicao TEXT
     );
   `);
+
+  // Adiciona a coluna `dataCriacao` caso ainda não exista
+  await db.execAsync(`
+    ALTER TABLE inventory 
+    ADD COLUMN dataCriacao TEXT DEFAULT CURRENT_TIMESTAMP;
+  `).catch(() => {
+    // Ignora erro caso a coluna já exista
+  });
+
+  // Adiciona a coluna `nomeMedicao` caso ainda não exista
+  await db.execAsync(`
+    ALTER TABLE inventory 
+    ADD COLUMN nomeMedicao TEXT;
+  `).catch(() => {
+    // Ignora erro caso a coluna já exista
+  });
 };
 
+// Função para inserir um item no banco de dados
 const insertItem = async (
   area: number,
   distRenques: number,
@@ -41,36 +63,41 @@ const insertItem = async (
   distArvores: number,
   numArvores: number,
   erroPermitido: number,
-  numParcelas: number
+  numParcelas: number,
+  nomeMedicao: string | null
 ): Promise<number> => {
   const db = await SQLite.openDatabaseAsync('inventory.db');
-  
+
   const result = await db.runAsync(
     `INSERT INTO inventory 
-      (area, distRenques, numLinhasRenque, distLinhas, distArvores, numArvores, erroPermitido, numParcelas) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    area, distRenques, numLinhasRenque, distLinhas, distArvores, numArvores, erroPermitido, numParcelas
+      (area, distRenques, numLinhasRenque, distLinhas, distArvores, numArvores, erroPermitido, numParcelas, nomeMedicao) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    area, distRenques, numLinhasRenque, distLinhas, distArvores, numArvores, erroPermitido, numParcelas, nomeMedicao
   );
 
   return result.lastInsertRowId;
 };
 
+// Função para obter todos os itens do banco de dados
 const getAllItems = async (): Promise<InventoryItem[]> => {
   const db = await SQLite.openDatabaseAsync('inventory.db');
-  
+
   const allRows = await db.getAllAsync('SELECT * FROM inventory');
 
   return allRows as InventoryItem[];
 };
 
-const updateItem = async (id: number, newIntValue: number): Promise<void> => {
+// Função para atualizar o nome de uma medição pelo ID
+const updateItem = async (id: number, nomeMedicao: string): Promise<void> => {
   const db = await SQLite.openDatabaseAsync('inventory.db');
+
   await db.runAsync(
-    'UPDATE inventory SET intValue = ? WHERE id = ?',
-    newIntValue, id
+    'UPDATE inventory SET nomeMedicao = ? WHERE id = ?',
+    nomeMedicao, id
   );
 };
 
+// Função para deletar um item pelo ID
 const deleteItem = async (id: number): Promise<void> => {
   const db = await SQLite.openDatabaseAsync('inventory.db');
 
@@ -80,6 +107,7 @@ const deleteItem = async (id: number): Promise<void> => {
   );
 };
 
+// Função para obter o primeiro item da tabela
 const getFirstItem = async (): Promise<InventoryItem | null> => {
   const db = await SQLite.openDatabaseAsync('inventory.db');
 

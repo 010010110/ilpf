@@ -17,7 +17,7 @@ const FormScreen = () => {
   const [numArvores, setNumArvores] = useState('');
   const [erroPermitido, setErroPermitido] = useState('');
   const [numParcelas, setNumParcelas] = useState('');
-  // const [nomeMedicao, setNomeMedicao] = useState('');
+  const [nomeMedicao, setNomeMedicao] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   useEffect(() => {
@@ -58,6 +58,7 @@ const FormScreen = () => {
         parseInt(numArvores),
         parseFloat(erroPermitido),
         parseInt(numParcelas),
+        nomeMedicao,
       );
   
       const results = calculateResults();
@@ -71,6 +72,8 @@ const FormScreen = () => {
         numArvores: parseInt(numArvores),
         erroPermitido: parseFloat(erroPermitido),
         numParcelas: parseInt(numParcelas),
+        nomeMedicao,
+        dataCriacao: new Date().toISOString(),
         ...results,
       });
     } catch (error) {
@@ -80,7 +83,7 @@ const FormScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* <TextInput
+      <TextInput
         placeholder="Nome da Medição"
         value={nomeMedicao}
         onChangeText={setNomeMedicao}
@@ -91,7 +94,7 @@ const FormScreen = () => {
           focusedField === 'nomeMedicao' && styles.inputFocused
         ]}
         placeholderTextColor={colors.placeholder}
-      /> */}
+      />
       <TextInput
         placeholder="Área (ha)"
         keyboardType="decimal-pad"

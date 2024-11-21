@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
-import Layout from './app/_layout'; // Seu componente de navegação
+import Layout from './app/_layout';
 
 export default function App() {
   return (
