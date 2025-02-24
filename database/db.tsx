@@ -36,22 +36,6 @@ const initDb = async (): Promise<void> => {
       nomeMedicao TEXT
     );
   `);
-
-  // Adiciona a coluna `dataCriacao` caso ainda não exista
-  await db.execAsync(`
-    ALTER TABLE inventory 
-    ADD COLUMN dataCriacao TEXT DEFAULT CURRENT_TIMESTAMP;
-  `).catch(() => {
-    // Ignora erro caso a coluna já exista
-  });
-
-  // Adiciona a coluna `nomeMedicao` caso ainda não exista
-  await db.execAsync(`
-    ALTER TABLE inventory 
-    ADD COLUMN nomeMedicao TEXT;
-  `).catch(() => {
-    // Ignora erro caso a coluna já exista
-  });
 };
 
 // Função para inserir um item no banco de dados

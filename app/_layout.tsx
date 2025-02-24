@@ -8,6 +8,7 @@ import ListScreen from '../screens/ListScreen';
 import ResultScreen from '../screens/ResultScreen';
 import CustomAppBar from '../components/CustomAppBar';
 import LoadingScreen from '@/screens/LoadingScreen';
+import AboutScreen from '@/screens/AboutScreen';
 
 const Stack = createStackNavigator();
 
@@ -35,6 +36,7 @@ export default function App() {
         <Stack.Navigator initialRouteName="List" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Form" component={FormScreen} />
           <Stack.Screen name="List" component={ListScreen} />
+          <Stack.Screen name="About" component={AboutScreen} />
           <Stack.Screen name="Result" component={ResultScreen} />
         </Stack.Navigator>
       </NavigationContainer>

@@ -1,6 +1,7 @@
 export type RootStackParamList = {
   Form: undefined;
   List: undefined;
+  About: undefined;
   Result: {
     area: number;
     distRenques: number;

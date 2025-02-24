@@ -32,6 +32,7 @@ const CustomAppBar = () => {
         >
           <Menu.Item onPress={() => { closeMenu(); navigation.navigate('Form'); }} title="Entrada de Dados" />
           <Menu.Item onPress={() => { closeMenu(); navigation.navigate('List'); }} title="Visualizar Dados" />
+          <Menu.Item onPress={() => { closeMenu(); navigation.navigate('About'); }} title="Sobre o app" />
         </Menu>
       </View>
     </Appbar.Header>
