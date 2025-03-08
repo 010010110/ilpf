@@ -9,6 +9,8 @@ import ResultScreen from '../screens/ResultScreen';
 import CustomAppBar from '../components/CustomAppBar';
 import LoadingScreen from '@/screens/LoadingScreen';
 import AboutScreen from '@/screens/AboutScreen';
+import { initDb, resetDatabase } from '@/database/db';
+import EditScreen from '@/screens/EditScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,18 +27,26 @@ export default function App() {
     loadData();
   }, []);
 
+  useEffect(() => {
+    const setupDatabase = async () => {
+      await initDb();
+    };
+    setupDatabase();
+  }, []);
+
   if (isLoading) {
     return <LoadingScreen />;
   }
   
   return (
     <PaperProvider theme={theme}>
-      <NavigationContainer independent={true}>
+      <NavigationContainer>
         <CustomAppBar />
         <Stack.Navigator initialRouteName="List" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Form" component={FormScreen} />
           <Stack.Screen name="List" component={ListScreen} />
           <Stack.Screen name="About" component={AboutScreen} />
+          <Stack.Screen name="Edit" component={EditScreen} />
           <Stack.Screen name="Result" component={ResultScreen} />
         </Stack.Navigator>
       </NavigationContainer>

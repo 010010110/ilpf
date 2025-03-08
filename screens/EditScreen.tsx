@@ -1,55 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { insertItem } from '../database/db';
+import { View, ScrollView, TouchableOpacity } from 'react-native';
+import { TextInput, Button, Text } from 'react-native-paper';
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/utils/types';
 import styles from '../styles/FormScreen.styles';
-import { calcularAreaPorArvore, calcularDensidadeArborea, calcularDensidadeParcela, calcularDimensoesParcela, calcularDistanciaEntreParcelas, calcularNumArvoresParcelas, calcularNumParcelas, calcularTaxaOcupacaoSolo, calcularTotalArvores, calcularTotalArvoresMonitoradas } from '@/utils/calculos';
-import { TextInput } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { updateItem } from '../database/db';
+import { calcularAreaPorArvore, calcularDensidadeArborea, calcularTaxaOcupacaoSolo, calcularTotalArvores, calcularDimensoesParcela, calcularDensidadeParcela, calcularNumParcelas, calcularDistanciaEntreParcelas, calcularTotalArvoresMonitoradas, calcularNumArvoresParcelas } from '@/utils/calculos';
 
-const FormScreen = () => {
+type EditScreenRouteProp = RouteProp<RootStackParamList, 'Edit'>;
+
+const EditScreen: React.FC = () => {
+  const route = useRoute<EditScreenRouteProp>();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  // Estados para os campos do formulário
-  const [nome_medicao, setNomeMedicao] = useState('');
-  const [area, setArea] = useState('');
-  const [distRenques, setDistRenques] = useState('');
-  const [numLinhasRenque, setNumLinhasRenque] = useState('');
-  const [distLinhas, setDistLinhas] = useState('');
-  const [distArvores, setDistArvores] = useState('');
-  const [erroPermitido, setErroPermitido] = useState('');
-  const [parcelaPreliminar1, setParcelaPreliminar1] = useState('');
-  const [parcelaPreliminar2, setParcelaPreliminar2] = useState('');
-  const [parcelaPreliminar3, setParcelaPreliminar3] = useState('');
-  const [parcelaPreliminar4, setParcelaPreliminar4] = useState('');
-  const [parcelaPreliminar5, setParcelaPreliminar5] = useState('');
+  const [nome_medicao, setNomeMedicao] = useState(route.params.nome_medicao);
+  const [area, setArea] = useState(route.params.area.toString());
+  const [distRenques, setDistRenques] = useState(route.params.distRenques.toString());
+  const [numLinhasRenque, setNumLinhasRenque] = useState(route.params.numLinhasRenque.toString());
+  const [distLinhas, setDistLinhas] = useState(route.params.distLinhas.toString());
+  const [distArvores, setDistArvores] = useState(route.params.distArvores.toString());
+  const [erroPermitido, setErroPermitido] = useState(route.params.erroPermitido.toString());
+  const [parcelaPreliminar1, setParcelaPreliminar1] = useState(route.params.parcelaPreliminar1.toString());
+  const [parcelaPreliminar2, setParcelaPreliminar2] = useState(route.params.parcelaPreliminar2.toString());
+  const [parcelaPreliminar3, setParcelaPreliminar3] = useState(route.params.parcelaPreliminar3.toString());
+  const [parcelaPreliminar4, setParcelaPreliminar4] = useState(route.params.parcelaPreliminar4.toString());
+  const [parcelaPreliminar5, setParcelaPreliminar5] = useState(route.params.parcelaPreliminar5.toString());
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  // Função para calcular os resultados
-  const calculateResults = () => {
+ const calculateResults = () => {
     const areaPorArvore = calcularAreaPorArvore(
       parseFloat(distRenques),
       parseFloat(distArvores),
       parseInt(numLinhasRenque),
       parseFloat(distLinhas)
     );
+
     const densidadeArborea = calcularDensidadeArborea(areaPorArvore);
+
     const taxaOcupacaoSolo = calcularTaxaOcupacaoSolo(
       parseFloat(distRenques),
       parseInt(numLinhasRenque),
       parseFloat(distLinhas)
     );
+
     const totalArvores = calcularTotalArvores(
       parseFloat(area),
       densidadeArborea
     );
+
     const { dimensao1, dimensao2, areaTotal } = calcularDimensoesParcela(
       parseFloat(distArvores),
       parseFloat(distRenques),
       parseInt(numLinhasRenque),
       parseFloat(distLinhas)
     );
+
     const densidadesPreliminares = [
       calcularDensidadeParcela(+parcelaPreliminar1, areaTotal),
       calcularDensidadeParcela(+parcelaPreliminar2, areaTotal),
@@ -57,27 +62,32 @@ const FormScreen = () => {
       calcularDensidadeParcela(+parcelaPreliminar4, areaTotal),
       calcularDensidadeParcela(+parcelaPreliminar5, areaTotal),
     ];
+
     const numParcelasCalculado = calcularNumParcelas(
       parseFloat(area),
       areaTotal,
       densidadesPreliminares,
       parseFloat(erroPermitido)
     );
+
     const distanciaEntreParcelas = calcularDistanciaEntreParcelas(
       parseFloat(area),
       numParcelasCalculado
     );
+
+    const calculaMediaParcelas = (
+      +parcelaPreliminar1 +
+      +parcelaPreliminar2 +
+      +parcelaPreliminar3 +
+      +parcelaPreliminar4 +
+      +parcelaPreliminar5) /
+      5
+
     const totalArvoresMonitoradas = calcularTotalArvoresMonitoradas(
       numParcelasCalculado,
-      Math.round(
-        (parseInt(parcelaPreliminar1) +
-          parseInt(parcelaPreliminar2) +
-          parseInt(parcelaPreliminar3) +
-          parseInt(parcelaPreliminar4) +
-          parseInt(parcelaPreliminar5)) /
-          5
-      )
+      calculaMediaParcelas
     );
+
     const numArvoreParcela = calcularNumArvoresParcelas(areaTotal, areaPorArvore);
     
 
@@ -120,7 +130,8 @@ const FormScreen = () => {
       }
 
       // Insere os dados no banco
-      await insertItem(
+      await updateItem(
+        route.params.id,
         nome_medicao,
         parseFloat(area),
         parseFloat(distRenques),
@@ -155,20 +166,20 @@ const FormScreen = () => {
         ...results,
       });
     } catch (error) {
-      console.error('Erro ao salvar os dados:', error);
-      alert('Erro ao salvar os dados.');
+      console.error('Erro ao atualizar os dados:', error);
+      alert('Erro ao atualizar os dados.');
     }
   };
 
-   useEffect(() => {
-      if (numLinhasRenque === '1') {
-        setDistLinhas(distRenques); // Define distLinhasRenque igual a distRenques
-      }
-    }, [numLinhasRenque, distRenques]);
+  useEffect(() => {
+    if (numLinhasRenque === '1') {
+      setDistLinhas(distRenques); // Define distLinhasRenque igual a distRenques
+    }
+  }, [numLinhasRenque, distRenques]);
 
   return (
     <ScrollView style={styles.container}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <View >
         <TextInput
           label="Nome da Medição"
           style={[
@@ -192,7 +203,7 @@ const FormScreen = () => {
           onFocus={() => setFocusedField('area')}
           onBlur={() => setFocusedField(null)}
         />
-        <TextInput
+         <TextInput
         label="Número de linhas no renque"
         style={[
           styles.input,
@@ -227,20 +238,22 @@ const FormScreen = () => {
         onChangeText={(text) => {
           if (numLinhasRenque !== '1') setDistLinhas(text);
         }}
-        editable={numLinhasRenque !== '1'}
+        editable={numLinhasRenque !== '1'} // Bloqueia edição manual se for 1
         onFocus={() => setFocusedField('distLinhasRenque')}
         onBlur={() => setFocusedField(null)}
       />
-      <TextInput
-        label="Distância entre árvores (m)"
-        style={[
-          styles.input,
-          focusedField === 'distArvores' && styles.inputFocused,
-        ]}
-        value={distArvores}
-        keyboardType="decimal-pad"
-        onChangeText={setDistArvores}
-      />
+        <TextInput
+          label="Distância entre árvores (m)"
+          style={[
+            styles.input,
+            focusedField === 'distArvores' && styles.inputFocused,
+          ]}
+          value={distArvores}
+          keyboardType="decimal-pad"
+          onChangeText={setDistArvores}
+          onFocus={() => setFocusedField('distArvores')}
+          onBlur={() => setFocusedField(null)}
+        />
         <TextInput
           label="Erro permitido (%)"
           style={[
@@ -292,9 +305,9 @@ const FormScreen = () => {
         <TouchableOpacity onPress={saveData} style={styles.button}>
           <Text style={styles.buttonText}>Salvar</Text>
         </TouchableOpacity>
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 };
 
-export default FormScreen;
+export default EditScreen;
