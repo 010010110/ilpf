@@ -20,7 +20,7 @@ type InventoryItem = {
   updated_at: string;
 };
 
-const databaseName = 'inventory.db';
+const databaseName = 'v1_0_1_0.db';
 
 // Função para inicializar o banco de dados
 const initDb = async (): Promise<void> => {

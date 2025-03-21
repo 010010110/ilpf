@@ -17,16 +17,20 @@ const AboutScreen = () => {
 
       <Text style={styles.subtitle}>Orientado por:</Text>
       <Text style={styles.text}>
-        Alaine Margarete Guimarães
+        Profª. Dra. Alaine Margarete Guimarães
+      </Text>
+      <Text style={styles.text}>
+        Prof. Dr. Vanderley Porfirio da Silva
       </Text>
 
       <Text style={styles.subtitle}>Instituição:</Text>
       <Text style={styles.text}>
-        UEPG
+        UEPG - Universidade Estadual de Ponta Grossa
       </Text>
       <Text style={styles.text}>
-        EMBRAPA
+        EMBRAPA - Empresa Brasileira de Pesquisa Agropecuária
       </Text>
+      
     </ScrollView>
   );
 };
