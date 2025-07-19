@@ -1,11 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, TouchableOpacity } from 'react-native';
-import { TextInput, Button, Text } from 'react-native-paper';
+import { TextInput, Text } from 'react-native-paper';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/utils/types';
 import styles from '../styles/FormScreen.styles';
 import { updateItem } from '../database/db';
-import { calcularAreaPorArvore, calcularDensidadeArborea, calcularTaxaOcupacaoSolo, calcularTotalArvores, calcularDimensoesParcela, calcularDensidadeParcela, calcularNumParcelas, calcularDistanciaEntreParcelas, calcularTotalArvoresMonitoradas, calcularNumArvoresParcelas } from '@/utils/calculos';
+import {
+  calcularAreaPorArvore,
+  calcularDensidadeArborea,
+  calcularTaxaOcupacaoSolo,
+  calcularTotalArvores,
+  calcularDimensoesParcela,
+  calcularDensidadeParcela,
+  calcularNumParcelas,
+  calcularDistanciaEntreParcelas,
+  calcularTotalArvoresMonitoradas,
+  calcularNumArvoresParcelas,
+} from '@/utils/calculos';
+import { Config } from '@/utils/config';
 
 type EditScreenRouteProp = RouteProp<RootStackParamList, 'Edit'>;
 
@@ -19,7 +31,7 @@ const EditScreen: React.FC = () => {
   const [numLinhasRenque, setNumLinhasRenque] = useState(route.params.numLinhasRenque.toString());
   const [distLinhas, setDistLinhas] = useState(route.params.distLinhas.toString());
   const [distArvores, setDistArvores] = useState(route.params.distArvores.toString());
-  const [erroPermitido, setErroPermitido] = useState(route.params.erroPermitido.toString());
+
   const [parcelaPreliminar1, setParcelaPreliminar1] = useState(route.params.parcelaPreliminar1.toString());
   const [parcelaPreliminar2, setParcelaPreliminar2] = useState(route.params.parcelaPreliminar2.toString());
   const [parcelaPreliminar3, setParcelaPreliminar3] = useState(route.params.parcelaPreliminar3.toString());
@@ -27,90 +39,40 @@ const EditScreen: React.FC = () => {
   const [parcelaPreliminar5, setParcelaPreliminar5] = useState(route.params.parcelaPreliminar5.toString());
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
- const calculateResults = () => {
-    const areaPorArvore = calcularAreaPorArvore(
-      parseFloat(distRenques),
-      parseFloat(distArvores),
-      parseInt(numLinhasRenque),
-      parseFloat(distLinhas)
-    );
+  const [areaPorArvore, setAreaPorArvore] = useState<number | null>(null);
+  const [densidadeArborea, setDensidadeArborea] = useState<number | null>(null);
 
-    const densidadeArborea = calcularDensidadeArborea(areaPorArvore);
+  useEffect(() => {
+    if (numLinhasRenque === '1') {
+      setDistLinhas(distRenques);
+    }
+  }, [numLinhasRenque, distRenques]);
 
-    const taxaOcupacaoSolo = calcularTaxaOcupacaoSolo(
-      parseFloat(distRenques),
-      parseInt(numLinhasRenque),
-      parseFloat(distLinhas)
-    );
+  useEffect(() => {
+    const camposPreenchidos =
+      distRenques &&
+      distArvores &&
+      numLinhasRenque &&
+      distLinhas;
 
-    const totalArvores = calcularTotalArvores(
-      parseFloat(area),
-      densidadeArborea
-    );
+    if (camposPreenchidos) {
+      const areaCalc = calcularAreaPorArvore(
+        parseFloat(distRenques),
+        parseFloat(distArvores),
+        parseInt(numLinhasRenque),
+        parseFloat(distLinhas)
+      );
+      const densidade = calcularDensidadeArborea(areaCalc);
+      setAreaPorArvore(areaCalc);
+      setDensidadeArborea(densidade);
+    } else {
+      setAreaPorArvore(null);
+      setDensidadeArborea(null);
+    }
+  }, [distRenques, distArvores, numLinhasRenque, distLinhas]);
 
-    const { dimensao1, dimensao2, areaTotal } = calcularDimensoesParcela(
-      parseFloat(distArvores),
-      parseFloat(distRenques),
-      parseInt(numLinhasRenque),
-      parseFloat(distLinhas)
-    );
-
-    const densidadesPreliminares = [
-      calcularDensidadeParcela(+parcelaPreliminar1, areaTotal),
-      calcularDensidadeParcela(+parcelaPreliminar2, areaTotal),
-      calcularDensidadeParcela(+parcelaPreliminar3, areaTotal),
-      calcularDensidadeParcela(+parcelaPreliminar4, areaTotal),
-      calcularDensidadeParcela(+parcelaPreliminar5, areaTotal),
-    ];
-
-    const numParcelasCalculado = calcularNumParcelas(
-      parseFloat(area),
-      areaTotal,
-      densidadesPreliminares,
-      parseFloat(erroPermitido)
-    );
-
-    const distanciaEntreParcelas = calcularDistanciaEntreParcelas(
-      parseFloat(area),
-      numParcelasCalculado
-    );
-
-    const calculaMediaParcelas = (
-      +parcelaPreliminar1 +
-      +parcelaPreliminar2 +
-      +parcelaPreliminar3 +
-      +parcelaPreliminar4 +
-      +parcelaPreliminar5) /
-      5
-
-    const totalArvoresMonitoradas = calcularTotalArvoresMonitoradas(
-      numParcelasCalculado,
-      calculaMediaParcelas
-    );
-
-    const numArvoreParcela = calcularNumArvoresParcelas(areaTotal, areaPorArvore);
-    
-
-    return {
-      areaPorArvore,
-      densidadeArborea,
-      taxaOcupacaoSolo,
-      totalArvores,
-      dimensao1,
-      dimensao2,
-      areaTotal,
-      densidadesPreliminares,
-      numParcelasCalculado,
-      distanciaEntreParcelas,
-      numArvoreParcela,
-      totalArvoresMonitoradas,
-    };
-  };
-
-  // Função para salvar os dados no banco e navegar para a tela de resultados
   const saveData = async () => {
     try {
-      // Validação básica dos campos
       if (
         !nome_medicao ||
         !area ||
@@ -118,7 +80,6 @@ const EditScreen: React.FC = () => {
         !numLinhasRenque ||
         !distLinhas ||
         !distArvores ||
-        !erroPermitido ||
         !parcelaPreliminar1 ||
         !parcelaPreliminar2 ||
         !parcelaPreliminar3 ||
@@ -129,7 +90,8 @@ const EditScreen: React.FC = () => {
         return;
       }
 
-      // Insere os dados no banco
+      const erroPermitido = Config.erroPermitido;
+
       await updateItem(
         route.params.id,
         nome_medicao,
@@ -138,7 +100,7 @@ const EditScreen: React.FC = () => {
         parseInt(numLinhasRenque),
         parseFloat(distLinhas),
         parseFloat(distArvores),
-        parseFloat(erroPermitido),
+        erroPermitido,
         parseInt(parcelaPreliminar1),
         parseInt(parcelaPreliminar2),
         parseInt(parcelaPreliminar3),
@@ -146,10 +108,50 @@ const EditScreen: React.FC = () => {
         parseInt(parcelaPreliminar5)
       );
 
-      // Calcula os resultados
-      const results = calculateResults();
+      const areaPorArvoreCalc = areaPorArvore!;
+      const densidadeArboreaCalc = densidadeArborea!;
+      const taxaOcupacaoSolo = calcularTaxaOcupacaoSolo(
+        parseFloat(distRenques),
+        parseInt(numLinhasRenque),
+        parseFloat(distLinhas)
+      );
+      const totalArvores = calcularTotalArvores(parseFloat(area), densidadeArboreaCalc);
+      const { dimensao1, dimensao2, areaTotal } = calcularDimensoesParcela(
+        parseFloat(distArvores),
+        parseFloat(distRenques),
+        parseInt(numLinhasRenque),
+        parseFloat(distLinhas)
+      );
+      const densidadesPreliminares = [
+        calcularDensidadeParcela(+parcelaPreliminar1, areaTotal),
+        calcularDensidadeParcela(+parcelaPreliminar2, areaTotal),
+        calcularDensidadeParcela(+parcelaPreliminar3, areaTotal),
+        calcularDensidadeParcela(+parcelaPreliminar4, areaTotal),
+        calcularDensidadeParcela(+parcelaPreliminar5, areaTotal),
+      ];
+      const numParcelasCalculado = calcularNumParcelas(
+        parseFloat(area),
+        areaTotal,
+        densidadesPreliminares,
+        erroPermitido
+      );
+      const distanciaEntreParcelas = calcularDistanciaEntreParcelas(
+        parseFloat(area),
+        numParcelasCalculado
+      );
+      const calculaMediaParcelas =
+        (+parcelaPreliminar1 +
+          +parcelaPreliminar2 +
+          +parcelaPreliminar3 +
+          +parcelaPreliminar4 +
+          +parcelaPreliminar5) /
+        5;
+      const totalArvoresMonitoradas = calcularTotalArvoresMonitoradas(
+        numParcelasCalculado,
+        calculaMediaParcelas
+      );
+      const numArvoreParcela = calcularNumArvoresParcelas(areaTotal, areaPorArvoreCalc);
 
-      // Navega para a tela de resultados
       navigation.navigate('Result', {
         nome_medicao,
         area: parseFloat(area),
@@ -157,13 +159,24 @@ const EditScreen: React.FC = () => {
         numLinhasRenque: parseInt(numLinhasRenque),
         distLinhas: parseFloat(distLinhas),
         distArvores: parseFloat(distArvores),
-        erroPermitido: parseFloat(erroPermitido),
+        erroPermitido,
         parcelaPreliminar1: parseInt(parcelaPreliminar1),
         parcelaPreliminar2: parseInt(parcelaPreliminar2),
         parcelaPreliminar3: parseInt(parcelaPreliminar3),
         parcelaPreliminar4: parseInt(parcelaPreliminar4),
         parcelaPreliminar5: parseInt(parcelaPreliminar5),
-        ...results,
+        areaPorArvore: areaPorArvoreCalc,
+        densidadeArborea: densidadeArboreaCalc,
+        taxaOcupacaoSolo,
+        totalArvores,
+        dimensao1,
+        dimensao2,
+        areaTotal,
+        densidadesPreliminares,
+        numParcelasCalculado,
+        distanciaEntreParcelas,
+        numArvoreParcela,
+        totalArvoresMonitoradas,
       });
     } catch (error) {
       console.error('Erro ao atualizar os dados:', error);
@@ -171,101 +184,32 @@ const EditScreen: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (numLinhasRenque === '1') {
-      setDistLinhas(distRenques); // Define distLinhasRenque igual a distRenques
-    }
-  }, [numLinhasRenque, distRenques]);
-
   return (
     <ScrollView style={styles.container}>
-      <View >
+      <View>
+        <TextInput label="Nome da Medição" style={styles.input} value={nome_medicao} onChangeText={setNomeMedicao} />
+        <TextInput label="Área (ha)" style={styles.input} value={area} keyboardType="decimal-pad" onChangeText={setArea} />
+        <TextInput label="Número de linhas no renque" style={styles.input} value={numLinhasRenque} keyboardType="decimal-pad" onChangeText={setNumLinhasRenque} />
+        <TextInput label="Distância entre renques (m)" style={styles.input} value={distRenques} keyboardType="decimal-pad" onChangeText={setDistRenques} />
         <TextInput
-          label="Nome da Medição"
-          style={[
-            styles.input,
-            focusedField === 'nome_medicao' && styles.inputFocused,
-          ]}
-          value={nome_medicao}
-          onChangeText={setNomeMedicao}
-          onFocus={() => setFocusedField('nome_medicao')}
-          onBlur={() => setFocusedField(null)}
-        />
-        <TextInput
-          label="Área (ha)"
-          style={[
-            styles.input,
-            focusedField === 'area' && styles.inputFocused,
-          ]}
-          value={area}
+          label="Distância entre linhas (m)"
+          style={styles.input}
+          value={distLinhas}
           keyboardType="decimal-pad"
-          onChangeText={setArea}
-          onFocus={() => setFocusedField('area')}
-          onBlur={() => setFocusedField(null)}
+          onChangeText={(text) => {
+            if (numLinhasRenque !== '1') setDistLinhas(text);
+          }}
+          editable={numLinhasRenque !== '1'}
         />
-         <TextInput
-        label="Número de linhas no renque"
-        style={[
-          styles.input,
-          focusedField === 'numLinhasRenque' && styles.inputFocused,
-        ]}
-        value={numLinhasRenque}
-        keyboardType="decimal-pad"
-        onChangeText={setNumLinhasRenque}
-        onFocus={() => setFocusedField('numLinhasRenque')}
-        onBlur={() => setFocusedField(null)}
-      />
-      <TextInput
-        label="Distância entre renques (m)"
-        style={[
-          styles.input,
-          focusedField === 'distRenques' && styles.inputFocused,
-        ]}
-        value={distRenques}
-        keyboardType="decimal-pad"
-        onChangeText={setDistRenques}
-        onFocus={() => setFocusedField('distRenques')}
-        onBlur={() => setFocusedField(null)}
-      />
-      <TextInput
-        label="Distância entre linhas (m)"
-        style={[
-          styles.input,
-          focusedField === 'distLinhasRenque' && styles.inputFocused,
-        ]}
-        value={distLinhas}
-        keyboardType="decimal-pad"
-        onChangeText={(text) => {
-          if (numLinhasRenque !== '1') setDistLinhas(text);
-        }}
-        editable={numLinhasRenque !== '1'} // Bloqueia edição manual se for 1
-        onFocus={() => setFocusedField('distLinhasRenque')}
-        onBlur={() => setFocusedField(null)}
-      />
-        <TextInput
-          label="Distância entre árvores (m)"
-          style={[
-            styles.input,
-            focusedField === 'distArvores' && styles.inputFocused,
-          ]}
-          value={distArvores}
-          keyboardType="decimal-pad"
-          onChangeText={setDistArvores}
-          onFocus={() => setFocusedField('distArvores')}
-          onBlur={() => setFocusedField(null)}
-        />
-        <TextInput
-          label="Erro permitido (%)"
-          style={[
-            styles.input,
-            focusedField === 'erroPermitido' && styles.inputFocused,
-          ]}
-          value={erroPermitido}
-          keyboardType="decimal-pad"
-          onChangeText={setErroPermitido}
-          onFocus={() => setFocusedField('erroPermitido')}
-          onBlur={() => setFocusedField(null)}
-        />
+        <TextInput label="Distância entre árvores (m)" style={styles.input} value={distArvores} keyboardType="decimal-pad" onChangeText={setDistArvores} />
+
+        {areaPorArvore !== null && (
+          <>
+            <TextInput label="Área por árvore (m²)" value={areaPorArvore.toFixed(2)} editable={false} style={styles.input} />
+            <TextInput label="Densidade arbórea (árv./ha)" value={densidadeArborea?.toFixed(2) || ''} editable={false} style={styles.input} />
+          </>
+        )}
+
         {[1, 2, 3, 4, 5].map((index) => (
           <TextInput
             key={index}
@@ -293,12 +237,7 @@ const EditScreen: React.FC = () => {
                 ? setParcelaPreliminar4
                 : setParcelaPreliminar5
             }
-            onFocus={() => setFocusedField(`parcelaPreliminar${index}`)}
-            onBlur={() => setFocusedField(null)}
-            style={[
-              styles.input,
-              focusedField === `parcelaPreliminar${index}` && styles.inputFocused,
-            ]}
+            style={styles.input}
           />
         ))}
 

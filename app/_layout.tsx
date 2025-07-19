@@ -11,6 +11,7 @@ import LoadingScreen from '@/screens/LoadingScreen';
 import AboutScreen from '@/screens/AboutScreen';
 import { initDb, resetDatabase } from '@/database/db';
 import EditScreen from '@/screens/EditScreen';
+import SettingsScreen from '@/screens/SettingsScreen';
 
 const Stack = createStackNavigator();
 
@@ -45,6 +46,7 @@ export default function App() {
         <Stack.Navigator initialRouteName="List" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Form" component={FormScreen} />
           <Stack.Screen name="List" component={ListScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
           <Stack.Screen name="About" component={AboutScreen} />
           <Stack.Screen name="Edit" component={EditScreen} />
           <Stack.Screen name="Result" component={ResultScreen} />

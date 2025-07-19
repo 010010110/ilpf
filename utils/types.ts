@@ -2,6 +2,7 @@ export type RootStackParamList = {
   Form: undefined;
   List: undefined;
   About: undefined;
+  Settings: undefined;
   Edit: {
     id: number;
     nome_medicao: string;

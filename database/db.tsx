@@ -20,7 +20,7 @@ type InventoryItem = {
   updated_at: string;
 };
 
-const databaseName = 'v1_0_1_0.db';
+const databaseName = 'test12.db';
 
 // Função para inicializar o banco de dados
 const initDb = async (): Promise<void> => {
@@ -118,7 +118,7 @@ const insertItem = async (
 // Função para obter todos os itens do banco de dados
 const getAllItems = async (): Promise<InventoryItem[]> => {
   const db = await SQLite.openDatabaseAsync(databaseName);
-  const allRows = await db.getAllAsync('SELECT * FROM inventory');
+  const allRows = await db.getAllAsync('SELECT * FROM inventory ORDER BY created_at DESC');
   return allRows as InventoryItem[];
 };
 

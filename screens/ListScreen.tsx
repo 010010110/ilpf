@@ -18,6 +18,7 @@ import {
   calcularTotalArvoresMonitoradas,
   calcularNumArvoresParcelas,
 } from '../utils/calculos';
+import { formatarNumeroBR } from '@/utils/Numberformatter';
 
 type InventoryItem = {
   id: number;
@@ -130,10 +131,10 @@ const ListScreen = () => {
     const totalArvoresMonitoradas = calcularTotalArvoresMonitoradas(
       numParcelasCalculado,
       (item.parcelaPreliminar1 +
-      item.parcelaPreliminar2 +
-      item.parcelaPreliminar3 +
-      item.parcelaPreliminar4 +
-      item.parcelaPreliminar5) /
+        item.parcelaPreliminar2 +
+        item.parcelaPreliminar3 +
+        item.parcelaPreliminar4 +
+        item.parcelaPreliminar5) /
       5
     );
 
@@ -170,12 +171,12 @@ const ListScreen = () => {
             <Card style={styles.card} onPress={() => navigateToResult(item)}>
               <Card.Title
                 title={`Medição: ${item.nome_medicao}`}
-                titleStyle={{ color: colors.background }}
+                titleStyle={{ color: colors.background, fontWeight: 'bold' }}
                 right={() => (
                   <View style={{ flexDirection: 'row' }}>
                     {/* Ícone de Edição */}
                     <IconButton
-                      icon="pencil" // Ícone de edição
+                      icon="pencil"
                       iconColor={colors.primary}
                       onPress={() => navigateToEdit(item)}
                     />
@@ -189,14 +190,36 @@ const ListScreen = () => {
                 )}
               />
               <Card.Content>
-                <Text style={styles.cardText}>Área: {item.area.toFixed(2)} ha</Text>
-                <Text style={styles.cardText}>Distância entre renques: {item.distRenques.toFixed(2)} m</Text>
-                <Text style={styles.cardText}>Número de linhas no renque: {item.numLinhasRenque}</Text>
-                <Text style={styles.cardText}>Distância entre linhas: {item.distLinhas.toFixed(2)} m</Text>
-                <Text style={styles.cardText}>Distância entre árvores: {item.distArvores.toFixed(2)} m</Text>
-                <Text style={styles.cardText}>Erro permitido: {item.erroPermitido}%</Text>
-                <Text style={styles.cardText}>Criado em: {new Date(item.created_at).toLocaleDateString()}</Text>
+                <View style={{ marginBottom: 8 }}>
+                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Área:</Text>
+                  <Text style={styles.cardText}>{formatarNumeroBR(item.area)} ha</Text>
+                </View>
+                <View style={{ marginBottom: 8 }}>
+                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Distância entre renques:</Text>
+                  <Text style={styles.cardText}>{formatarNumeroBR(item.distRenques)} m</Text>
+                </View>
+                <View style={{ marginBottom: 8 }}>
+                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Número de linhas no renque:</Text>
+                  <Text style={styles.cardText}>{item.numLinhasRenque}</Text>
+                </View>
+                <View style={{ marginBottom: 8 }}>
+                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Distância entre linhas:</Text>
+                  <Text style={styles.cardText}>{formatarNumeroBR(item.distLinhas)} m</Text>
+                </View>
+                <View style={{ marginBottom: 8 }}>
+                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Distância entre árvores:</Text>
+                  <Text style={styles.cardText}>{formatarNumeroBR(item.distArvores)} m</Text>
+                </View>
+                <View style={{ marginBottom: 8 }}>
+                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Erro permitido:</Text>
+                  <Text style={styles.cardText}>{formatarNumeroBR(item.erroPermitido)}%</Text>
+                </View>
+                <View style={{ marginBottom: 8 }}>
+                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Criado em:</Text>
+                  <Text style={styles.cardText}>{new Date(item.created_at).toLocaleDateString()}</Text>
+                </View>
               </Card.Content>
+
             </Card>
             <Divider style={styles.divider} />
           </View>

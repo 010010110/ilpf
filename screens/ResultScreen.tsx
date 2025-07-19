@@ -4,6 +4,7 @@ import { Button, Card, Text, Divider } from 'react-native-paper';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/utils/types';
 import styles from '../styles/ResultScreen.styles';
+import { formatarNumeroBR } from '@/utils/Numberformatter';
 
 type ResultScreenRouteProp = RouteProp<RootStackParamList, 'Result'>;
 
@@ -38,6 +39,14 @@ const ResultScreen: React.FC = () => {
     totalArvoresMonitoradas,
   } = route.params;
 
+  const parcelasPreliminares = [
+    parcelaPreliminar1,
+    parcelaPreliminar2,
+    parcelaPreliminar3,
+    parcelaPreliminar4,
+    parcelaPreliminar5,
+  ];
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer} style={styles.background}>
       <View style={styles.container}>
@@ -48,47 +57,105 @@ const ResultScreen: React.FC = () => {
 
         {/* Card para Dados Inseridos */}
         <Card style={styles.card}>
-          <Card.Title title="Dados Inseridos" titleStyle={styles.cardTitle} />
+          <Card.Title title="Dados Inseridos" titleStyle={[styles.cardTitle, { fontWeight: 'bold' }]} />
           <Card.Content>
-            <Text style={styles.cardText}>Nome da Medição: {nome_medicao}</Text>
-            <Text style={styles.cardText}>Área: {area.toFixed(2)} ha</Text>
-            <Text style={styles.cardText}>Distância entre renques: {distRenques.toFixed(2)} m</Text>
-            <Text style={styles.cardText}>Número de linhas no renque: {numLinhasRenque}</Text>
-            <Text style={styles.cardText}>Distância entre linhas: {distLinhas.toFixed(2)} m</Text>
-            <Text style={styles.cardText}>Distância entre árvores: {distArvores.toFixed(2)} m</Text>
-            <Text style={styles.cardText}>Erro permitido: {erroPermitido}%</Text>
-            <Text style={styles.cardText}>Parcela Preliminar 1: {parcelaPreliminar1} árvores</Text>
-            <Text style={styles.cardText}>Parcela Preliminar 2: {parcelaPreliminar2} árvores</Text>
-            <Text style={styles.cardText}>Parcela Preliminar 3: {parcelaPreliminar3} árvores</Text>
-            <Text style={styles.cardText}>Parcela Preliminar 4: {parcelaPreliminar4} árvores</Text>
-            <Text style={styles.cardText}>Parcela Preliminar 5: {parcelaPreliminar5} árvores</Text>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Nome da Medição:</Text>
+              <Text style={styles.cardText}>{nome_medicao}</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Área:</Text>
+              <Text style={styles.cardText}>{formatarNumeroBR(area)} ha</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Distância entre renques:</Text>
+              <Text style={styles.cardText}>{formatarNumeroBR(distRenques)} m</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Número de linhas no renque:</Text>
+              <Text style={styles.cardText}>{numLinhasRenque}</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Distância entre linhas:</Text>
+              <Text style={styles.cardText}>{formatarNumeroBR(distLinhas)} m</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Distância entre árvores:</Text>
+              <Text style={styles.cardText}>{formatarNumeroBR(distArvores)} m</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Erro permitido:</Text>
+              <Text style={styles.cardText}>{formatarNumeroBR(erroPermitido)}%</Text>
+            </View>
+            {parcelasPreliminares.map((valor, index) => (
+              <View key={index} style={{ marginBottom: 8 }}>
+                <Text style={[styles.cardText, { fontWeight: 'bold' }]}>{`Parcela Preliminar ${index + 1}:`}</Text>
+                <Text style={styles.cardText}>{valor} árvores</Text>
+              </View>
+            ))}
           </Card.Content>
         </Card>
+
 
         <Divider style={styles.divider} />
 
         {/* Card para Dados Calculados */}
         <Card style={styles.cardCalculated}>
-          <Card.Title title="Dados Calculados" titleStyle={styles.cardTitleCalculated} />
+          <Card.Title title="Dados Calculados" titleStyle={[styles.cardTitleCalculated, { fontWeight: 'bold'}]} />
           <Card.Content>
-            <Text style={styles.cardTextCalculated}>Área por árvore: {areaPorArvore.toFixed(2)} m²</Text>
-            <Text style={styles.cardTextCalculated}>Densidade arbórea: {densidadeArborea.toFixed(2)} árvores/ha</Text>
-            <Text style={styles.cardTextCalculated}>Taxa de ocupação do solo: {100 * +taxaOcupacaoSolo}%</Text>
-            <Text style={styles.cardTextCalculated}>Total de árvores: {totalArvores}</Text>
-            <Text style={styles.cardTextCalculated}>Largura da parcela: {dimensao2.toFixed(2)} m</Text>
-            <Text style={styles.cardTextCalculated}>Comprimento da parcela: {dimensao1.toFixed(2)} m</Text>
-            <Text style={styles.cardTextCalculated}>Área da parcela: {areaTotal.toFixed(2)} m²</Text>
-            <Text style={styles.cardTextCalculated}>Parcela 1: {densidadesPreliminares[0]} árvores/ha</Text>
-            <Text style={styles.cardTextCalculated}>Parcela 2: {densidadesPreliminares[1]} árvores/ha</Text>
-            <Text style={styles.cardTextCalculated}>Parcela 3: {densidadesPreliminares[2]} árvores/ha</Text>
-            <Text style={styles.cardTextCalculated}>Parcela 4: {densidadesPreliminares[3]} árvores/ha</Text>
-            <Text style={styles.cardTextCalculated}>Parcela 5: {densidadesPreliminares[4]} árvores/ha</Text>
-            <Text style={styles.cardTextCalculated}>Número de parcelas calculadas: {numParcelasCalculado}</Text>
-            <Text style={styles.cardTextCalculated}>Número de arvóres por parcela: {numArvoreParcela}</Text>
-            <Text style={styles.cardTextCalculated}>Distância entre parcelas: {distanciaEntreParcelas.toFixed(2)} m</Text>
-            <Text style={styles.cardTextCalculated}>Total de árvores monitoradas: {totalArvoresMonitoradas}</Text>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Área por árvore:</Text>
+              <Text style={styles.cardTextCalculated}>{formatarNumeroBR(areaPorArvore)} m²</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Densidade arbórea:</Text>
+              <Text style={styles.cardTextCalculated}>{formatarNumeroBR(densidadeArborea)} árvores/ha</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Taxa de ocupação do solo:</Text>
+              <Text style={styles.cardTextCalculated}>{formatarNumeroBR(100 * +taxaOcupacaoSolo)}%</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Total de árvores:</Text>
+              <Text style={styles.cardTextCalculated}>{formatarNumeroBR(totalArvores)}</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Largura da parcela:</Text>
+              <Text style={styles.cardTextCalculated}>{formatarNumeroBR(dimensao2)} m</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Comprimento da parcela:</Text>
+              <Text style={styles.cardTextCalculated}>{formatarNumeroBR(dimensao1)} m</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Área da parcela:</Text>
+              <Text style={styles.cardTextCalculated}>{formatarNumeroBR(areaTotal)} m²</Text>
+            </View>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <View key={n} style={{ marginBottom: 8 }}>
+                <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>{`Parcela ${n}:`}</Text>
+                <Text style={styles.cardTextCalculated}>{formatarNumeroBR(densidadesPreliminares[n - 1])} árvores/ha</Text>
+              </View>
+            ))}
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Número de parcelas calculadas:</Text>
+              <Text style={styles.cardTextCalculated}>{numParcelasCalculado}</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Número de árvores por parcela:</Text>
+              <Text style={styles.cardTextCalculated}>{numArvoreParcela}</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Distância entre parcelas:</Text>
+              <Text style={styles.cardTextCalculated}>{formatarNumeroBR(distanciaEntreParcelas)} m</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <Text style={[styles.cardTextCalculated, { fontWeight: 'bold'}]}>Total de árvores monitoradas:</Text>
+              <Text style={styles.cardTextCalculated}>{totalArvoresMonitoradas}</Text>
+            </View>
           </Card.Content>
         </Card>
+
       </View>
     </ScrollView>
   );
