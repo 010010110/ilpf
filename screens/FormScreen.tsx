@@ -16,10 +16,11 @@ import {
   calcularTotalArvores,
   calcularTotalArvoresMonitoradas,
 } from '@/utils/calculos';
-import { TextInput } from 'react-native-paper';
+import { Appbar, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Config } from '@/utils/config';
 import { formatarNumeroBR } from '@/utils/Numberformatter';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const FormScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -90,20 +91,25 @@ const FormScreen = () => {
       return;
     }
 
-    await insertItem(
-      nome_medicao,
-      parseFloat(area),
-      parseFloat(distRenques),
-      parseInt(numLinhasRenque),
-      parseFloat(distLinhas),
-      parseFloat(distArvores),
-      erroPermitido,
-      parseInt(parcelaPreliminar1),
-      parseInt(parcelaPreliminar2),
-      parseInt(parcelaPreliminar3),
-      parseInt(parcelaPreliminar4),
-      parseInt(parcelaPreliminar5)
-    );
+    try{
+
+      await insertItem(
+        nome_medicao,
+        parseFloat(area),
+        parseFloat(distRenques),
+        parseInt(numLinhasRenque),
+        parseFloat(distLinhas),
+        parseFloat(distArvores),
+        erroPermitido,
+        parseInt(parcelaPreliminar1),
+        parseInt(parcelaPreliminar2),
+        parseInt(parcelaPreliminar3),
+        parseInt(parcelaPreliminar4),
+        parseInt(parcelaPreliminar5)
+      );
+    }catch(err){
+      console.log(err)
+    }
 
     const areaPorArvoreCalc = areaPorArvore!;
     const densidadeArboreaCalc = densidadeArborea!;
@@ -144,7 +150,7 @@ const FormScreen = () => {
           parseInt(parcelaPreliminar3) +
           parseInt(parcelaPreliminar4) +
           parseInt(parcelaPreliminar5)) /
-          5
+        5
       )
     );
     const numArvoreParcela = calcularNumArvoresParcelas(areaTotal, areaPorArvoreCalc);
@@ -175,17 +181,49 @@ const FormScreen = () => {
       numArvoreParcela,
       totalArvoresMonitoradas,
     });
+
+    setNomeMedicao('');
+    setArea('');
+    setDistRenques('');
+    setNumLinhasRenque('');
+    setDistLinhas('');
+    setDistArvores('');
+
+    setAreaPorArvore(null);
+    setDensidadeArborea(null);
+    setEtapa2Visivel(false);
+
+    setParcelaPreliminar1('');
+    setParcelaPreliminar2('');
+    setParcelaPreliminar3('');
+    setParcelaPreliminar4('');
+    setParcelaPreliminar5('');
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Appbar.Header>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialCommunityIcons name="clipboard-list" size={24} color="#666" style={{ marginRight: 8 }} />
+          <Text style={{
+            fontSize: 25,
+            color: '#666',
+            fontFamily: 'Roboto-Medium',
+            letterSpacing: 0.5,
+            fontWeight: 'bold'
+          }}>
+            Nova Medição
+          </Text>
+        </View>
+      </Appbar.Header>
+
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
         <TextInput label="Nome da Medição" style={styles.input} value={nome_medicao} onChangeText={setNomeMedicao} />
-        <TextInput label="Área (ha)" style={styles.input} value={area} keyboardType="decimal-pad" onChangeText={setArea} />
-        <TextInput label="Distância entre renques (m)" style={styles.input} value={distRenques} keyboardType="decimal-pad" onChangeText={setDistRenques} />
-        <TextInput label="Número de linhas no renque" style={styles.input} value={numLinhasRenque} keyboardType="decimal-pad" onChangeText={setNumLinhasRenque} />
-        <TextInput label="Distância entre linhas (m)" style={styles.input} value={distLinhas} keyboardType="decimal-pad" onChangeText={setDistLinhas} />
-        <TextInput label="Distância entre árvores (m)" style={styles.input} value={distArvores} keyboardType="decimal-pad" onChangeText={setDistArvores} />
+        <TextInput label="Área (ha)" style={styles.input} value={area}  onChangeText={setArea} />
+        <TextInput label="Distância entre renques (m)" style={styles.input} value={distRenques}  onChangeText={setDistRenques} />
+        <TextInput label="Número de linhas no renque" style={styles.input} value={numLinhasRenque}  onChangeText={setNumLinhasRenque} />
+        <TextInput label="Distância entre linhas (m)" style={styles.input} value={distLinhas}  onChangeText={setDistLinhas} />
+        <TextInput label="Distância entre árvores (m)" style={styles.input} value={distArvores}  onChangeText={setDistArvores} />
 
         {etapa2Visivel && (
           <>
@@ -198,26 +236,18 @@ const FormScreen = () => {
                 label={`Parcela Preliminar ${index} (árvores)`}
                 keyboardType="number-pad"
                 value={
-                  index === 1
-                    ? parcelaPreliminar1
-                    : index === 2
-                    ? parcelaPreliminar2
-                    : index === 3
-                    ? parcelaPreliminar3
-                    : index === 4
-                    ? parcelaPreliminar4
-                    : parcelaPreliminar5
+                  index === 1 ? parcelaPreliminar1 :
+                    index === 2 ? parcelaPreliminar2 :
+                      index === 3 ? parcelaPreliminar3 :
+                        index === 4 ? parcelaPreliminar4 :
+                          parcelaPreliminar5
                 }
                 onChangeText={
-                  index === 1
-                    ? setParcelaPreliminar1
-                    : index === 2
-                    ? setParcelaPreliminar2
-                    : index === 3
-                    ? setParcelaPreliminar3
-                    : index === 4
-                    ? setParcelaPreliminar4
-                    : setParcelaPreliminar5
+                  index === 1 ? setParcelaPreliminar1 :
+                    index === 2 ? setParcelaPreliminar2 :
+                      index === 3 ? setParcelaPreliminar3 :
+                        index === 4 ? setParcelaPreliminar4 :
+                          setParcelaPreliminar5
                 }
                 style={styles.input}
               />
@@ -228,8 +258,8 @@ const FormScreen = () => {
             </TouchableOpacity>
           </>
         )}
-      </SafeAreaView>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

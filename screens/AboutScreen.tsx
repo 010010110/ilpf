@@ -7,7 +7,7 @@ const AboutScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sobre o Aplicativo</Text>
       <Text style={styles.text}>
-        Este aplicativo foi desenvolvido com o objetivo de fornecer uma solução prática e eficiente para Integração lavoura pecuaria e floresta.
+        Este aplicativo foi desenvolvido com o objetivo de fornecer uma solução prática e eficiente para integração lavoura pecuaria e floresta.
       </Text>
       
       <Text style={styles.subtitle}>Desenvolvido por:</Text>

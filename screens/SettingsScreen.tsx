@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, Alert } from 'react-native';
-import { TextInput, Button, Text } from 'react-native-paper';
+import { TextInput, Button, Text, Appbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { Config, setErroPermitido } from '@/utils/config';
 import styles from '../styles/FormScreen.styles';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ScrollView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SettingsScreen = () => {
 	const navigation = useNavigation();
 	const [valorErro, setValorErro] = useState('');
 	const [carregado, setCarregado] = useState(false);
-	const [focusedField, setFocusedField] = useState<string | null>(null);
-
 
 	useEffect(() => {
 		setValorErro(Config.erroPermitido.toString());
@@ -38,22 +39,45 @@ const SettingsScreen = () => {
 	if (!carregado) return null;
 
 	return (
-		<View style={styles.container}>
-			<Text>Configurações</Text>
+		<SafeAreaView style={{ flex: 1 }}>
 
-			<TextInput
-				label="Erro permitido (%)"
-				value={valorErro}
-				style={[styles.input, focusedField === 'erroPermitido' && styles.inputFocused]}
-				onChangeText={setValorErro}
-				// keyboardType="numeric"
-				returnKeyType="done"
-			/>
+			{/* <View style={styles.container}> */}
+				<Appbar.Header>
+					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+						<MaterialCommunityIcons name="cog" size={24} color="#666" style={{ marginRight: 8 }} />
+						<Text style={{
+							fontSize: 25,
+							color: '#666',
+							fontFamily: 'Roboto-Medium',
+							letterSpacing: 0.5,
+							fontWeight: 'bold'
+						}}>
+							Configurações
+						</Text>
+					</View>
+				</Appbar.Header>
 
-			<Button mode="contained" onPress={salvar} style={styles.button}>
-				Salvar
-			</Button>
-		</View>
+				<ScrollView contentContainerStyle={{ padding: 16 }}>
+					<Text style={styles.sectionTitle}>Parâmetros do sistema</Text>
+
+					<TextInput
+						style={styles.input}
+						label="Erro permitido (%)"
+						value={String(valorErro)}
+						
+						onChangeText={(text) => setErroPermitido(parseFloat(text) || 0)}
+					/>
+
+					<Button
+						mode="contained"
+						onPress={salvar}
+						style={styles.button}
+					>
+						Salvar
+					</Button>
+				</ScrollView>
+			{/* </View> */}
+		</SafeAreaView>
 	);
 };
 

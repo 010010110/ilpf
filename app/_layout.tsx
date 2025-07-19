@@ -1,57 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import { Provider as PaperProvider } from 'react-native-paper';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import theme from '../utils/theme';
-import FormScreen from '../screens/FormScreen';
-import ListScreen from '../screens/ListScreen';
-import ResultScreen from '../screens/ResultScreen';
-import CustomAppBar from '../components/CustomAppBar';
-import LoadingScreen from '@/screens/LoadingScreen';
-import AboutScreen from '@/screens/AboutScreen';
-import { initDb, resetDatabase } from '@/database/db';
+import { NavigationContainer } from '@react-navigation/native';
+import FormScreen from '@/screens/FormScreen';
 import EditScreen from '@/screens/EditScreen';
-import SettingsScreen from '@/screens/SettingsScreen';
+import ResultScreen from '@/screens/ResultScreen';
+import MainTabs from '@/components/MainTabs';
+import { useEffect, useState } from 'react';
+import { initDb, resetDatabase } from '@/database/db';
+import LoadingScreen from '@/screens/LoadingScreen';
 
 const Stack = createStackNavigator();
-
 export default function App() {
 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadData = async () => {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    const initializeApp = async () => {
+      await initDb();
       setIsLoading(false);
     };
-
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    const setupDatabase = async () => {
-      await initDb();
-    };
-    setupDatabase();
+    initializeApp();
   }, []);
 
   if (isLoading) {
     return <LoadingScreen />;
   }
-  
+
   return (
-    <PaperProvider theme={theme}>
-      <NavigationContainer>
-        <CustomAppBar />
-        <Stack.Navigator initialRouteName="List" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Form" component={FormScreen} />
-          <Stack.Screen name="List" component={ListScreen} />
-          <Stack.Screen name="Settings" component={SettingsScreen} />
-          <Stack.Screen name="About" component={AboutScreen} />
-          <Stack.Screen name="Edit" component={EditScreen} />
-          <Stack.Screen name="Result" component={ResultScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </PaperProvider>
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{ headerShown: false }}
+        id="root"
+      >
+        <Stack.Screen name="MainTabs" component={MainTabs} />
+        <Stack.Screen name="Form" component={FormScreen} />
+        <Stack.Screen name="Edit" component={EditScreen} />
+        <Stack.Screen name="Result" component={ResultScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }

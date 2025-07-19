@@ -1,11 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, FlatList, Alert } from 'react-native';
-import { Button, Text, Card, Divider, IconButton } from 'react-native-paper';
+import { Text, Card, Divider, IconButton, FAB, Appbar } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
-import { getAllItems, deleteItem } from '../database/db';
+import { getAllItems, deleteItem, initDb } from '../database/db';
 import { RootStackParamList } from '@/utils/types';
 import styles from '../styles/ListScreen.styles';
 import colors from '@/utils/colors';
+import EmptyIllustration from '../assets/images/empty.svg';
 import {
   calcularAreaPorArvore,
   calcularDensidadeArborea,
@@ -19,6 +20,8 @@ import {
   calcularNumArvoresParcelas,
 } from '../utils/calculos';
 import { formatarNumeroBR } from '@/utils/Numberformatter';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 type InventoryItem = {
   id: number;
@@ -42,24 +45,39 @@ const ListScreen = () => {
   const [data, setData] = useState<InventoryItem[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  // Função para buscar os dados do banco
+  const [dbReady, setDbReady] = useState(false);
+
+// Executa initDb apenas uma vez ao montar a tela
+useEffect(() => {
+  const startDb = async () => {
+    try {
+      await initDb();
+      setDbReady(true);
+    } catch (e) {
+      console.error('Erro ao iniciar DB na ListScreen:', e);
+    }
+  };
+  startDb();
+}, []);
+
+  // Carrega os dados da base
   const fetchData = async () => {
     try {
-      const items = (await getAllItems()) || [];
+      const items = await getAllItems() || [];
       setData(items);
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
     }
   };
 
-  // Atualiza a lista sempre que a tela recebe foco
   useFocusEffect(
-    useCallback(() => {
+  useCallback(() => {
+    if (dbReady) {
       fetchData();
-    }, [])
-  );
+    }
+  }, [dbReady])
+);
 
-  // Função para excluir um item
   const handleDelete = (id: number) => {
     Alert.alert(
       'Confirmação',
@@ -120,22 +138,18 @@ const ListScreen = () => {
       densidadesPreliminares,
       item.erroPermitido
     );
-
     const distanciaEntreParcelas = calcularDistanciaEntreParcelas(
       item.area,
       numParcelasCalculado
     );
-
     const numArvoreParcela = calcularNumArvoresParcelas(areaTotal, areaPorArvore);
-
     const totalArvoresMonitoradas = calcularTotalArvoresMonitoradas(
       numParcelasCalculado,
       (item.parcelaPreliminar1 +
         item.parcelaPreliminar2 +
         item.parcelaPreliminar3 +
         item.parcelaPreliminar4 +
-        item.parcelaPreliminar5) /
-      5
+        item.parcelaPreliminar5) / 5
     );
 
     navigation.navigate('Result', {
@@ -156,76 +170,92 @@ const ListScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Botão para criar uma nova medição */}
-      <Button mode="contained" onPress={() => navigation.navigate('Form')} style={styles.button}>
-        Criar Novo
-      </Button>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Appbar.Header>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialCommunityIcons name="format-list-bulleted" size={24} color="#666" style={{ marginRight: 8 }} />
+          <Text style={{
+            fontSize: 25,
+            color: '#666',
+            fontFamily: 'Roboto-Medium',
+            letterSpacing: 0.5,
+            fontWeight: 'bold'
+          }}>
+            Medições
+          </Text>
+        </View>
+      </Appbar.Header>
 
-      {/* Lista de medições salvas */}
-      <FlatList
-        data={data}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => (
-          <View>
-            <Card style={styles.card} onPress={() => navigateToResult(item)}>
-              <Card.Title
-                title={`Medição: ${item.nome_medicao}`}
-                titleStyle={{ color: colors.background, fontWeight: 'bold' }}
-                right={() => (
-                  <View style={{ flexDirection: 'row' }}>
-                    {/* Ícone de Edição */}
-                    <IconButton
-                      icon="pencil"
-                      iconColor={colors.primary}
-                      onPress={() => navigateToEdit(item)}
-                    />
-                    {/* Ícone de Exclusão */}
-                    <IconButton
-                      icon="delete"
-                      iconColor={colors.primary}
-                      onPress={() => handleDelete(item.id)}
-                    />
+      <View style={styles.container}>
+        {/* Botão flutuante para criar nova medição */}
+        <FAB
+          icon="plus"
+          onPress={() => navigation.navigate('Form')}
+          style={styles.fab}
+          color="#fff"
+        />
+        {/* Lista de medições ou mensagem de vazio */}
+        <FlatList
+          data={data}
+          ListEmptyComponent={
+            <View style={{ alignItems: 'center', marginTop: 32 }}>
+              <Text style={{ textAlign: 'center', color: '#666', marginBottom: 16 }}>
+                Você ainda não criou nenhuma medição. Clique no botão "+" para adicionar!
+              </Text>
+              <EmptyIllustration width={300} height={300} />
+            </View>
+          }
+          keyExtractor={item => item.id.toString()}
+          renderItem={({ item }) => (
+            <View>
+              <Card style={styles.card} onPress={() => navigateToResult(item)}>
+                <Card.Title
+                  title={item.nome_medicao}
+                  subtitle={`Criado em: ${new Date(item.created_at).toLocaleDateString()}`}
+                  titleStyle={{ fontWeight: 'bold', fontSize: 25, color: colors.primary }}
+                  subtitleStyle={{ color: colors.background }}
+                />
+                <Card.Content>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Área:</Text>
+                    <Text style={styles.value}>{formatarNumeroBR(item.area)} ha</Text>
                   </View>
-                )}
-              />
-              <Card.Content>
-                <View style={{ marginBottom: 8 }}>
-                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Área:</Text>
-                  <Text style={styles.cardText}>{formatarNumeroBR(item.area)} ha</Text>
-                </View>
-                <View style={{ marginBottom: 8 }}>
-                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Distância entre renques:</Text>
-                  <Text style={styles.cardText}>{formatarNumeroBR(item.distRenques)} m</Text>
-                </View>
-                <View style={{ marginBottom: 8 }}>
-                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Número de linhas no renque:</Text>
-                  <Text style={styles.cardText}>{item.numLinhasRenque}</Text>
-                </View>
-                <View style={{ marginBottom: 8 }}>
-                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Distância entre linhas:</Text>
-                  <Text style={styles.cardText}>{formatarNumeroBR(item.distLinhas)} m</Text>
-                </View>
-                <View style={{ marginBottom: 8 }}>
-                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Distância entre árvores:</Text>
-                  <Text style={styles.cardText}>{formatarNumeroBR(item.distArvores)} m</Text>
-                </View>
-                <View style={{ marginBottom: 8 }}>
-                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Erro permitido:</Text>
-                  <Text style={styles.cardText}>{formatarNumeroBR(item.erroPermitido)}%</Text>
-                </View>
-                <View style={{ marginBottom: 8 }}>
-                  <Text style={[styles.cardText, { fontWeight: 'bold' }]}>Criado em:</Text>
-                  <Text style={styles.cardText}>{new Date(item.created_at).toLocaleDateString()}</Text>
-                </View>
-              </Card.Content>
-
-            </Card>
-            <Divider style={styles.divider} />
-          </View>
-        )}
-      />
-    </View>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Renques:</Text>
+                    <Text style={styles.value}>{formatarNumeroBR(item.distRenques)} m</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Linhas/renque:</Text>
+                    <Text style={styles.value}>{item.numLinhasRenque}</Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Erro permitido:</Text>
+                    <Text style={styles.value}>{formatarNumeroBR(item.erroPermitido)}%</Text>
+                  </View>
+                </Card.Content>
+                <Card.Actions style={{ justifyContent: 'flex-end' }}>
+                  <IconButton
+                    icon="pencil-outline"
+                    iconColor={colors.primary}
+                    containerColor="transparent"
+                    onPress={() => navigateToEdit(item)}
+                    accessibilityLabel="Editar medição"
+                  />
+                  <IconButton
+                    icon="trash-can-outline"
+                    iconColor={colors.primary}
+                    containerColor="transparent"
+                    onPress={() => handleDelete(item.id)}
+                    accessibilityLabel="Deletar medição"
+                  />
+                </Card.Actions>
+              </Card>
+              <Divider style={styles.divider} />
+            </View>
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
