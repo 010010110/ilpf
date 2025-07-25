@@ -219,16 +219,16 @@ const FormScreen = () => {
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <TextInput label="Nome da Medição" style={styles.input} value={nome_medicao} onChangeText={setNomeMedicao} />
-        <TextInput label="Área (ha)" style={styles.input} value={area}  onChangeText={setArea} />
-        <TextInput label="Distância entre renques (m)" style={styles.input} value={distRenques}  onChangeText={setDistRenques} />
-        <TextInput label="Número de linhas no renque" style={styles.input} value={numLinhasRenque}  onChangeText={setNumLinhasRenque} />
-        <TextInput label="Distância entre linhas (m)" style={styles.input} value={distLinhas}  onChangeText={setDistLinhas} />
-        <TextInput label="Distância entre árvores (m)" style={styles.input} value={distArvores}  onChangeText={setDistArvores} />
+        <TextInput label="Área (ha)" style={styles.input} value={area}  onChangeText={setArea} keyboardType="number-pad"/>
+        <TextInput label="Distância entre renques (m)" style={styles.input} value={distRenques}  onChangeText={setDistRenques} keyboardType="number-pad" />
+        <TextInput label="Número de linhas no renque" style={styles.input} value={numLinhasRenque}  onChangeText={setNumLinhasRenque} keyboardType="number-pad"/>
+        <TextInput label="Distância entre linhas (m)" style={styles.input} value={distLinhas}  onChangeText={setDistLinhas} keyboardType="number-pad"/>
+        <TextInput label="Distância entre árvores (m)" style={styles.input} value={distArvores}  onChangeText={setDistArvores} keyboardType="number-pad"/>
 
         {etapa2Visivel && (
           <>
             <TextInput label="Área por árvore (m²)" style={styles.input} value={formatarNumeroBR(areaPorArvore) || ''} editable={false} />
-            <TextInput label="Densidade arbórea (árv./ha)" style={styles.input} value={formatarNumeroBR(densidadeArborea) || ''} editable={false} />
+            <TextInput label="Densidade arbórea (árv./ha)" style={styles.input} value={String(densidadeArborea)} editable={false} />
 
             {[1, 2, 3, 4, 5].map((index) => (
               <TextInput

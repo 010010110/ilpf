@@ -63,9 +63,9 @@ const SettingsScreen = () => {
 					<TextInput
 						style={styles.input}
 						label="Erro permitido (%)"
-						value={String(valorErro)}
-						
-						onChangeText={(text) => setErroPermitido(parseFloat(text) || 0)}
+						value={valorErro}
+						keyboardType="number-pad"
+						onChangeText={(text) => setValorErro(text)}
 					/>
 
 					<Button

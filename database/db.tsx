@@ -20,7 +20,7 @@ type InventoryItem = {
   updated_at: string;
 };
 
-const databaseName = 'criaumpls2.db';
+const databaseName = 'v_0.1.1.db';
 
 // Função para inicializar o banco de dados
 const initDb = async (): Promise<void> => {

@@ -178,18 +178,18 @@ const EditScreen = () => {
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <TextInput label="Nome da Medição" value={nome} onChangeText={setNome} style={styles.input} />
-        <TextInput label="Área (ha)" value={area} onChangeText={setArea} style={styles.input} />
-        <TextInput label="Distância entre renques (m)" value={renques} onChangeText={setRenques} style={styles.input} />
-        <TextInput label="Número de linhas no renque" value={linhasRenque} onChangeText={setLinhasRenque} style={styles.input} />
+        <TextInput label="Área (ha)" value={area} onChangeText={setArea} style={styles.input} keyboardType="number-pad" />
+        <TextInput label="Distância entre renques (m)" value={renques} onChangeText={setRenques} style={styles.input}  keyboardType="number-pad"/>
+        <TextInput label="Número de linhas no renque" value={linhasRenque} onChangeText={setLinhasRenque} style={styles.input} keyboardType="number-pad"/>
         <TextInput
           label="Distância entre linhas (m)"
           value={distLinhas}
+          keyboardType="number-pad"
           onChangeText={(text) => linhasRenque !== '1' && setDistLinhas(text)}
-
           editable={linhasRenque !== '1'}
           style={styles.input}
         />
-        <TextInput label="Distância entre árvores (m)" value={distArvores} onChangeText={setDistArvores} style={styles.input} />
+        <TextInput label="Distância entre árvores (m)" value={distArvores} onChangeText={setDistArvores} style={styles.input} keyboardType="number-pad"/>
 
         {areaPorArvore !== null && (
           <>

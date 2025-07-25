@@ -3,7 +3,7 @@ import { View, ScrollView } from 'react-native';
 import { Text, Appbar } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 import styles from '../styles/ResultScreen.styles';
-import { formatarNumeroBR } from '@/utils/Numberformatter';
+import { formatarNumeroBR, formatarNumeroBRNoDecimal } from '@/utils/Numberformatter';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -15,7 +15,6 @@ const ResultScreen = () => {
     nome_medicao,
     areaPorArvore,
     densidadeArborea,
-    taxaOcupacaoSolo,
     totalArvores,
     dimensao1,
     dimensao2,
@@ -63,12 +62,12 @@ const ResultScreen = () => {
             </View>
             <View style={styles.resultRow}>
               <Text style={styles.label}>Densidade arbórea:</Text>
-              <Text>{formatarNumeroBR(densidadeArborea)} árvores/ha</Text>
+              <Text>{densidadeArborea} árvores/ha</Text>
             </View>
-            <View style={styles.resultRow}>
+            {/* <View style={styles.resultRow}>
               <Text style={styles.label}>Taxa de ocupação do solo:</Text>
               <Text>{formatarNumeroBR(taxaOcupacaoSolo)}%</Text>
-            </View>
+            </View> */}
 
             <Text style={styles.sectionTitle}>Parcela</Text>
             <View style={styles.resultRow}>
@@ -87,7 +86,7 @@ const ResultScreen = () => {
             {densidadesPreliminares?.map((valor: number, index: number) => (
               <View key={index} style={styles.resultRow}>
                 <Text style={styles.label}>Parcela {index + 1}:</Text>
-                <Text>{formatarNumeroBR(valor)} árvores/ha</Text>
+                <Text>{valor} árvores/ha</Text>
               </View>
             ))}
 
@@ -106,11 +105,11 @@ const ResultScreen = () => {
             </View>
             <View style={styles.resultRow}>
               <Text style={styles.label}>Árvores monitoradas:</Text>
-              <Text>{formatarNumeroBR(totalArvoresMonitoradas)}</Text>
+              <Text>{totalArvoresMonitoradas}</Text>
             </View>
             <View style={styles.resultRow}>
               <Text style={styles.label}>Total estimado de árvores:</Text>
-              <Text>{formatarNumeroBR(totalArvores)}</Text>
+              <Text>{formatarNumeroBRNoDecimal(totalArvores)}</Text>
             </View>
           </>
         )}

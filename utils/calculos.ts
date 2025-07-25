@@ -1,21 +1,3 @@
-type InventoryItem = {
-  id: number;
-  nome_medicao: string;
-  area: number;
-  distRenques: number;
-  numLinhasRenque: number;
-  distLinhas: number;
-  distArvores: number;
-  erroPermitido: number;
-  parcelaPreliminar1: number;
-  parcelaPreliminar2: number;
-  parcelaPreliminar3: number;
-  parcelaPreliminar4: number;
-  parcelaPreliminar5: number;
-  created_at: string;
-  updated_at: string;
-};
-
 // Função para calcular a área por árvore
 export const calcularAreaPorArvore = (
   distRenques: number,
@@ -66,7 +48,7 @@ export const calcularDimensoesParcela = (
 ): { dimensao1: number, dimensao2: number, areaTotal: number } => {
   const dimensao1 = 12 * distArvores;
   const dimensao2 = 2 * (distRenques + (distLinhas * (numLinhasRenque - 1)));
-  const areaTotal = dimensao1 * dimensao2;
+  const areaTotal = (dimensao1 * dimensao2);
   return { dimensao1, dimensao2, areaTotal };
 };
 
