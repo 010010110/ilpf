@@ -24,6 +24,7 @@ const ResultScreen = () => {
     numArvoreParcela,
     distanciaEntreParcelas,
     totalArvoresMonitoradas,
+    taxaOcupacaoSolo
   } = params as any;
 
   const dadosValidos = areaPorArvore && densidadeArborea;
@@ -64,11 +65,10 @@ const ResultScreen = () => {
               <Text style={styles.label}>Densidade arbórea:</Text>
               <Text>{densidadeArborea} árvores/ha</Text>
             </View>
-            {/* <View style={styles.resultRow}>
+            <View style={styles.resultRow}>
               <Text style={styles.label}>Taxa de ocupação do solo:</Text>
               <Text>{formatarNumeroBR(taxaOcupacaoSolo)}%</Text>
-            </View> */}
-
+            </View>
             <Text style={styles.sectionTitle}>Parcela</Text>
             <View style={styles.resultRow}>
               <Text style={styles.label}>Largura:</Text>
@@ -82,14 +82,6 @@ const ResultScreen = () => {
               <Text style={styles.label}>Área:</Text>
               <Text>{formatarNumeroBR(areaTotal)} m²</Text>
             </View>
-
-            {densidadesPreliminares?.map((valor: number, index: number) => (
-              <View key={index} style={styles.resultRow}>
-                <Text style={styles.label}>Parcela {index + 1}:</Text>
-                <Text>{valor} árvores/ha</Text>
-              </View>
-            ))}
-
             <Text style={styles.sectionTitle}>Totais</Text>
             <View style={styles.resultRow}>
               <Text style={styles.label}>Parcelas calculadas:</Text>

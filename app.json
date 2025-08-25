@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ILPF",
-    "slug": "ILPF",
+    "slug": "ilpf",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
