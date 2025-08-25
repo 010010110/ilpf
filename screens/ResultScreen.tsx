@@ -1,79 +1,112 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
-import { Button, Card, Text, Divider } from 'react-native-paper';
-import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/utils/types';
+import { Text, Appbar } from 'react-native-paper';
+import { useRoute } from '@react-navigation/native';
 import styles from '../styles/ResultScreen.styles';
-import { FlatList } from 'react-native-gesture-handler';
+import { formatarNumeroBR, formatarNumeroBRNoDecimal } from '@/utils/Numberformatter';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-type ResultScreenRouteProp = RouteProp<RootStackParamList, 'Result'>;
+const ResultScreen = () => {
+  const route = useRoute();
 
-
-const ResultScreen: React.FC = () => {
-  const route = useRoute<ResultScreenRouteProp>();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
-
+  const params = route.params || {};
   const {
-    area,
-    distRenques,
-    numLinhasRenque,
-    distLinhas,
-    distArvores,
-    numArvores,
-    erroPermitido,
-    numParcelas,
+    nome_medicao,
     areaPorArvore,
     densidadeArborea,
-    larguraParcela,
-    comprimentoParcela,
-    areaParcela,
-    numArvoresPorParcela,
-  } = route.params;
+    totalArvores,
+    dimensao1,
+    dimensao2,
+    areaTotal,
+    densidadesPreliminares,
+    numParcelasCalculado,
+    numArvoreParcela,
+    distanciaEntreParcelas,
+    totalArvoresMonitoradas,
+    taxaOcupacaoSolo
+  } = params as any;
 
-  const areaSistemaM2 = area * 10000;
-  const distanciaEntreParcelas = Math.sqrt(areaSistemaM2 / numParcelas);
+  const dadosValidos = areaPorArvore && densidadeArborea;
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer} style={styles.background}>
-      <View style={styles.container}>
-        {/* Botão para voltar à lista */}
-        <Button mode="contained" onPress={() =>  navigation.navigate('List')} style={styles.button}>
-          Voltar à Listagem
-        </Button>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Appbar.Header>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialCommunityIcons name="calculator-variant" size={24} color="#666" style={{ marginRight: 8 }} />
+          <Text style={{
+            fontSize: 25,
+            color: '#666',
+            fontFamily: 'Roboto-Medium',
+            letterSpacing: 0.5,
+            fontWeight: 'bold'
+          }}>
+            Resultados
+          </Text>
+        </View>
+      </Appbar.Header>
 
-        {/* Card para Dados Inseridos */}
-        <Card style={styles.card}>
-          <Card.Title title="Dados Inseridos" titleStyle={styles.cardTitle} />
-          <Card.Content>
-            <Text style={styles.cardText}>Área: {area.toFixed(2)} ha</Text>
-            <Text style={styles.cardText}>Distância entre renques: {distRenques.toFixed(2)} m</Text>
-            <Text style={styles.cardText}>Número de linhas no renque: {numLinhasRenque}</Text>
-            <Text style={styles.cardText}>Distância entre linhas: {distLinhas.toFixed(2)} m</Text>
-            <Text style={styles.cardText}>Distância entre árvores: {distArvores.toFixed(2)} m</Text>
-            <Text style={styles.cardText}>Número de árvores: {numArvores}</Text>
-            <Text style={styles.cardText}>Erro permitido: {erroPermitido.toFixed(2)}%</Text>
-            <Text style={styles.cardText}>Número de parcelas: {numParcelas}</Text>
-          </Card.Content>
-        </Card>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        {!dadosValidos ? (
+          <Text style={{ textAlign: 'center', marginTop: 40, fontSize: 16, color: '#666' }}>
+            Nenhum resultado disponível. Por favor, selecione uma medição válida.
+          </Text>
+        ) : (
+          <>
 
-        <Divider style={styles.divider} />
+            <Text style={styles.sectionTitle}>{nome_medicao}</Text>
 
-        {/* Card para Dados Calculados */}
-        <Card style={styles.cardCalculated}>
-          <Card.Title title="Dados Calculados" titleStyle={styles.cardTitleCalculated} />
-          <Card.Content>
-            <Text style={styles.cardTextCalculated}>Área por árvore: {areaPorArvore.toFixed(2)} m²</Text>
-            <Text style={styles.cardTextCalculated}>Densidade arbórea: {densidadeArborea.toFixed(2)} árvores/ha</Text>
-            <Text style={styles.cardTextCalculated}>Largura da parcela: {larguraParcela.toFixed(2)} m</Text>
-            <Text style={styles.cardTextCalculated}>Comprimento da parcela: {comprimentoParcela.toFixed(2)} m</Text>
-            <Text style={styles.cardTextCalculated}>Área da parcela: {areaParcela.toFixed(2)} m²</Text>
-            <Text style={styles.cardTextCalculated}>Número de árvores por parcela: {numArvoresPorParcela}</Text>
-            <Text style={styles.cardTextCalculated}>Distância entre parcelas: {distanciaEntreParcelas.toFixed(2)} m</Text>
-          </Card.Content>
-        </Card>
-
-      </View> 
-    </ScrollView>
+            <Text style={styles.sectionTitle}>Resumo Geral</Text>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Área por árvore:</Text>
+              <Text>{formatarNumeroBR(areaPorArvore)} m²</Text>
+            </View>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Densidade arbórea:</Text>
+              <Text>{densidadeArborea} árvores/ha</Text>
+            </View>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Taxa de ocupação do solo:</Text>
+              <Text>{formatarNumeroBR(taxaOcupacaoSolo)}%</Text>
+            </View>
+            <Text style={styles.sectionTitle}>Parcela</Text>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Largura:</Text>
+              <Text>{formatarNumeroBR(dimensao2)} m</Text>
+            </View>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Comprimento:</Text>
+              <Text>{formatarNumeroBR(dimensao1)} m</Text>
+            </View>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Área:</Text>
+              <Text>{formatarNumeroBR(areaTotal)} m²</Text>
+            </View>
+            <Text style={styles.sectionTitle}>Totais</Text>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Parcelas calculadas:</Text>
+              <Text>{numParcelasCalculado}</Text>
+            </View>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Árvores por parcela:</Text>
+              <Text>{numArvoreParcela}</Text>
+            </View>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Distância entre parcelas:</Text>
+              <Text>{formatarNumeroBR(distanciaEntreParcelas)} m</Text>
+            </View>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Árvores monitoradas:</Text>
+              <Text>{totalArvoresMonitoradas}</Text>
+            </View>
+            <View style={styles.resultRow}>
+              <Text style={styles.label}>Total estimado de árvores:</Text>
+              <Text>{formatarNumeroBRNoDecimal(totalArvores)}</Text>
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

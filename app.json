@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ilpf",
+    "name": "ILPF",
     "slug": "ilpf",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -25,7 +25,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true
@@ -37,6 +38,12 @@
       "eas": {
         "projectId": "a4ab51cc-ac76-4e89-93a9-b4227cf16af3"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a4ab51cc-ac76-4e89-93a9-b4227cf16af3"
     }
   }
 }

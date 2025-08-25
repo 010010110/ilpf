@@ -7,7 +7,7 @@ const AboutScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sobre o Aplicativo</Text>
       <Text style={styles.text}>
-        Este aplicativo foi desenvolvido com o objetivo de fornecer uma solução prática e eficiente para Integração lavoura pecuaria e floresta.
+        Este aplicativo foi desenvolvido com o objetivo de fornecer uma solução prática e eficiente para integração lavoura pecuaria e floresta.
       </Text>
       
       <Text style={styles.subtitle}>Desenvolvido por:</Text>
@@ -17,16 +17,20 @@ const AboutScreen = () => {
 
       <Text style={styles.subtitle}>Orientado por:</Text>
       <Text style={styles.text}>
-        Alaine Margarete Guimarães
+        Profª. Dra. Alaine Margarete Guimarães
+      </Text>
+      <Text style={styles.text}>
+        Prof. Dr. Vanderley Porfirio da Silva
       </Text>
 
       <Text style={styles.subtitle}>Instituição:</Text>
       <Text style={styles.text}>
-        UEPG
+        UEPG - Universidade Estadual de Ponta Grossa
       </Text>
       <Text style={styles.text}>
-        EMBRAPA
+        EMBRAPA - Empresa Brasileira de Pesquisa Agropecuária
       </Text>
+      
     </ScrollView>
   );
 };

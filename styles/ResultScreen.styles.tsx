@@ -50,6 +50,24 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: colors.primary,
   },
+  sectionTitle: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#2e7d32',
+  marginTop: 24,
+  marginBottom: 8,
+},
+
+resultRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  marginBottom: 8,
+},
+
+label: {
+  fontWeight: 'bold',
+  color: '#444',
+},
 });
 
 export default styles;

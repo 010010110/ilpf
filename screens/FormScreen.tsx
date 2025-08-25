@@ -1,209 +1,265 @@
-import React, { useState, useEffect } from 'react';
-import { TextInput, ScrollView, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { initDb, insertItem } from '../database/db';
+import { insertItem } from '../database/db';
 import { RootStackParamList } from '@/utils/types';
 import styles from '../styles/FormScreen.styles';
-import colors from '@/utils/colors';
+import {
+  calcularAreaPorArvore,
+  calcularDensidadeArborea,
+  calcularDensidadeParcela,
+  calcularDimensoesParcela,
+  calcularDistanciaEntreParcelas,
+  calcularNumArvoresParcelas,
+  calcularNumParcelas,
+  calcularTaxaOcupacaoSolo,
+  calcularTotalArvores,
+  calcularTotalArvoresMonitoradas,
+} from '@/utils/calculos';
+import { Appbar, TextInput } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Config } from '@/utils/config';
+import { formatarNumeroBR } from '@/utils/Numberformatter';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const FormScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  
+
+  const [nome_medicao, setNomeMedicao] = useState('');
   const [area, setArea] = useState('');
   const [distRenques, setDistRenques] = useState('');
   const [numLinhasRenque, setNumLinhasRenque] = useState('');
   const [distLinhas, setDistLinhas] = useState('');
   const [distArvores, setDistArvores] = useState('');
-  const [numArvores, setNumArvores] = useState('');
-  const [erroPermitido, setErroPermitido] = useState('');
-  const [numParcelas, setNumParcelas] = useState('');
-  const [nomeMedicao, setNomeMedicao] = useState('');
+
+  const [areaPorArvore, setAreaPorArvore] = useState<number | null>(null);
+  const [densidadeArborea, setDensidadeArborea] = useState<number | null>(null);
+  const [etapa2Visivel, setEtapa2Visivel] = useState(false);
+
+  const [parcelaPreliminar1, setParcelaPreliminar1] = useState('');
+  const [parcelaPreliminar2, setParcelaPreliminar2] = useState('');
+  const [parcelaPreliminar3, setParcelaPreliminar3] = useState('');
+  const [parcelaPreliminar4, setParcelaPreliminar4] = useState('');
+  const [parcelaPreliminar5, setParcelaPreliminar5] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
+  // Verifica se todos os campos da etapa 1 foram preenchidos
   useEffect(() => {
-    const setupDatabase = async () => {
-      await initDb();
-    };
-    setupDatabase();
-  }, []);
+    const camposOk =
+      nome_medicao &&
+      area &&
+      distRenques &&
+      numLinhasRenque &&
+      distLinhas &&
+      distArvores;
 
-  const calculateResults = () => {
-    const areaPorArvore = parseFloat(distRenques) * parseFloat(distArvores);
-    const densidadeArborea = 10000 / areaPorArvore;
-    const faixaAleia = parseFloat(distRenques);
-    const faixaRenque = (parseInt(numLinhasRenque) - 1) * parseFloat(distLinhas);
-    const larguraParcela = 2 * (faixaAleia + faixaRenque);
-    const comprimentoParcela = parseFloat(distArvores) * 12;
-    const areaParcela = larguraParcela * comprimentoParcela;
-    const numArvoresPorParcela = (comprimentoParcela * 2 * parseInt(numLinhasRenque)) / parseFloat(distArvores);
-
-    return {
-      areaPorArvore,
-      densidadeArborea,
-      larguraParcela,
-      comprimentoParcela,
-      areaParcela,
-      numArvoresPorParcela,
-    };
-  };
+    if (camposOk) {
+      const areaCalculada = calcularAreaPorArvore(
+        parseFloat(distRenques),
+        parseFloat(distArvores),
+        parseInt(numLinhasRenque),
+        parseFloat(distLinhas)
+      );
+      const densidadeCalculada = calcularDensidadeArborea(areaCalculada);
+      setAreaPorArvore(areaCalculada);
+      setDensidadeArborea(densidadeCalculada);
+      setEtapa2Visivel(true);
+    } else {
+      setEtapa2Visivel(false);
+      setAreaPorArvore(null);
+      setDensidadeArborea(null);
+    }
+  }, [nome_medicao, area, distRenques, numLinhasRenque, distLinhas, distArvores]);
 
   const saveData = async () => {
-    try {
+    const erroPermitido = Config.erroPermitido;
+
+    if (
+      !nome_medicao ||
+      !area ||
+      !distRenques ||
+      !numLinhasRenque ||
+      !distLinhas ||
+      !distArvores ||
+      !parcelaPreliminar1 ||
+      !parcelaPreliminar2 ||
+      !parcelaPreliminar3 ||
+      !parcelaPreliminar4 ||
+      !parcelaPreliminar5
+    ) {
+      alert('Preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    try{
+
       await insertItem(
+        nome_medicao,
         parseFloat(area),
         parseFloat(distRenques),
         parseInt(numLinhasRenque),
         parseFloat(distLinhas),
         parseFloat(distArvores),
-        parseInt(numArvores),
-        parseFloat(erroPermitido),
-        parseInt(numParcelas),
-        nomeMedicao,
+        erroPermitido,
+        parseInt(parcelaPreliminar1),
+        parseInt(parcelaPreliminar2),
+        parseInt(parcelaPreliminar3),
+        parseInt(parcelaPreliminar4),
+        parseInt(parcelaPreliminar5)
       );
-  
-      const results = calculateResults();
-  
-      navigation.navigate('Result', {
-        area: parseFloat(area),
-        distRenques: parseFloat(distRenques),
-        numLinhasRenque: parseInt(numLinhasRenque),
-        distLinhas: parseFloat(distLinhas),
-        distArvores: parseFloat(distArvores),
-        numArvores: parseInt(numArvores),
-        erroPermitido: parseFloat(erroPermitido),
-        numParcelas: parseInt(numParcelas),
-        nomeMedicao,
-        dataCriacao: new Date().toISOString(),
-        ...results,
-      });
-    } catch (error) {
-      console.error('Erro ao inserir dados:', error);
+    }catch(err){
+      console.log(err)
     }
+
+    const areaPorArvoreCalc = areaPorArvore!;
+    const densidadeArboreaCalc = densidadeArborea!;
+    const taxaOcupacaoSolo = calcularTaxaOcupacaoSolo(
+      parseFloat(distRenques),
+      parseInt(numLinhasRenque),
+      parseFloat(distLinhas)
+    );
+    const totalArvores = calcularTotalArvores(parseFloat(area), densidadeArboreaCalc);
+    const { dimensao1, dimensao2, areaTotal } = calcularDimensoesParcela(
+      parseFloat(distArvores),
+      parseFloat(distRenques),
+      parseInt(numLinhasRenque),
+      parseFloat(distLinhas)
+    );
+    const densidadesPreliminares = [
+      calcularDensidadeParcela(+parcelaPreliminar1, areaTotal),
+      calcularDensidadeParcela(+parcelaPreliminar2, areaTotal),
+      calcularDensidadeParcela(+parcelaPreliminar3, areaTotal),
+      calcularDensidadeParcela(+parcelaPreliminar4, areaTotal),
+      calcularDensidadeParcela(+parcelaPreliminar5, areaTotal),
+    ];
+    const numParcelasCalculado = calcularNumParcelas(
+      parseFloat(area),
+      areaTotal,
+      densidadesPreliminares,
+      erroPermitido
+    );
+    const distanciaEntreParcelas = calcularDistanciaEntreParcelas(
+      parseFloat(area),
+      numParcelasCalculado
+    );
+    const totalArvoresMonitoradas = calcularTotalArvoresMonitoradas(
+      numParcelasCalculado,
+      Math.round(
+        (parseInt(parcelaPreliminar1) +
+          parseInt(parcelaPreliminar2) +
+          parseInt(parcelaPreliminar3) +
+          parseInt(parcelaPreliminar4) +
+          parseInt(parcelaPreliminar5)) /
+        5
+      )
+    );
+    const numArvoreParcela = calcularNumArvoresParcelas(areaTotal, areaPorArvoreCalc);
+
+    navigation.navigate('Result', {
+      nome_medicao,
+      area: parseFloat(area),
+      distRenques: parseFloat(distRenques),
+      numLinhasRenque: parseInt(numLinhasRenque),
+      distLinhas: parseFloat(distLinhas),
+      distArvores: parseFloat(distArvores),
+      erroPermitido,
+      parcelaPreliminar1: parseInt(parcelaPreliminar1),
+      parcelaPreliminar2: parseInt(parcelaPreliminar2),
+      parcelaPreliminar3: parseInt(parcelaPreliminar3),
+      parcelaPreliminar4: parseInt(parcelaPreliminar4),
+      parcelaPreliminar5: parseInt(parcelaPreliminar5),
+      areaPorArvore: areaPorArvoreCalc,
+      densidadeArborea: densidadeArboreaCalc,
+      taxaOcupacaoSolo,
+      totalArvores,
+      dimensao1,
+      dimensao2,
+      areaTotal,
+      densidadesPreliminares,
+      numParcelasCalculado,
+      distanciaEntreParcelas,
+      numArvoreParcela,
+      totalArvoresMonitoradas,
+    });
+
+    setNomeMedicao('');
+    setArea('');
+    setDistRenques('');
+    setNumLinhasRenque('');
+    setDistLinhas('');
+    setDistArvores('');
+
+    setAreaPorArvore(null);
+    setDensidadeArborea(null);
+    setEtapa2Visivel(false);
+
+    setParcelaPreliminar1('');
+    setParcelaPreliminar2('');
+    setParcelaPreliminar3('');
+    setParcelaPreliminar4('');
+    setParcelaPreliminar5('');
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <TextInput
-        placeholder="Nome da Medição"
-        value={nomeMedicao}
-        onChangeText={setNomeMedicao}
-        onFocus={() => setFocusedField('nomeMedicao')}
-        onBlur={() => setFocusedField(null)}
-        style={[
-          styles.input,
-          focusedField === 'nomeMedicao' && styles.inputFocused
-        ]}
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        placeholder="Área (ha)"
-        keyboardType="decimal-pad"
-        value={area}
-        onChangeText={setArea}
-        onFocus={() => setFocusedField('area')}
-        onBlur={() => setFocusedField(null)}
-        style={[
-          styles.input,
-          focusedField === 'area' && styles.inputFocused
-        ]}
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        placeholder="Distância entre renques (m)"
-        keyboardType="decimal-pad"
-        value={distRenques}
-        onChangeText={setDistRenques}
-        onFocus={() => setFocusedField('distRenques')}
-        onBlur={() => setFocusedField(null)}
-        style={[
-          styles.input,
-          focusedField === 'distRenques' && styles.inputFocused
-        ]}
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        placeholder="Número de linhas no renque"
-        keyboardType="number-pad"
-        value={numLinhasRenque}
-        onChangeText={setNumLinhasRenque}
-        onFocus={() => setFocusedField('numLinhasRenque')}
-        onBlur={() => setFocusedField(null)}
-        style={[
-          styles.input,
-          focusedField === 'numLinhasRenque' && styles.inputFocused
-        ]}
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        placeholder="Distância entre linhas (m)"
-        keyboardType="decimal-pad"
-        value={distLinhas}
-        onChangeText={setDistLinhas}
-        onFocus={() => setFocusedField('distLinhas')}
-        onBlur={() => setFocusedField(null)}
-        style={[
-          styles.input,
-          focusedField === 'distLinhas' && styles.inputFocused
-        ]}
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        placeholder="Distância entre árvores (m)"
-        keyboardType="decimal-pad"
-        value={distArvores}
-        onChangeText={setDistArvores}
-        onFocus={() => setFocusedField('distArvores')}
-        onBlur={() => setFocusedField(null)}
-        style={[
-          styles.input,
-          focusedField === 'distArvores' && styles.inputFocused
-        ]}
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        placeholder="Número de árvores"
-        keyboardType="number-pad"
-        value={numArvores}
-        onChangeText={setNumArvores}
-        onFocus={() => setFocusedField('numArvores')}
-        onBlur={() => setFocusedField(null)}
-        style={[
-          styles.input,
-          focusedField === 'numArvores' && styles.inputFocused
-        ]}
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        placeholder="Erro permitido (%)"
-        keyboardType="decimal-pad"
-        value={erroPermitido}
-        onChangeText={setErroPermitido}
-        onFocus={() => setFocusedField('erroPermitido')}
-        onBlur={() => setFocusedField(null)}
-        style={[
-          styles.input,
-          focusedField === 'erroPermitido' && styles.inputFocused
-        ]}
-        placeholderTextColor={colors.placeholder}
-      />
-      <TextInput
-        placeholder="Número de parcelas preliminares"
-        keyboardType="number-pad"
-        value={numParcelas}
-        onChangeText={setNumParcelas}
-        onFocus={() => setFocusedField('numParcelas')}
-        onBlur={() => setFocusedField(null)}
-        style={[
-          styles.input,
-          focusedField === 'numParcelas' && styles.inputFocused
-        ]}
-        placeholderTextColor={colors.placeholder}
-      />
-      
-      <TouchableOpacity onPress={saveData} style={styles.button}>
-        <Text style={styles.buttonText}>Salvar</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Appbar.Header>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialCommunityIcons name="clipboard-list" size={24} color="#666" style={{ marginRight: 8 }} />
+          <Text style={{
+            fontSize: 25,
+            color: '#666',
+            fontFamily: 'Roboto-Medium',
+            letterSpacing: 0.5,
+            fontWeight: 'bold'
+          }}>
+            Nova Medição
+          </Text>
+        </View>
+      </Appbar.Header>
+
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <TextInput label="Nome da Medição" style={styles.input} value={nome_medicao} onChangeText={setNomeMedicao} />
+        <TextInput label="Área (ha)" style={styles.input} value={area}  onChangeText={setArea} keyboardType="number-pad"/>
+        <TextInput label="Distância entre renques (m)" style={styles.input} value={distRenques}  onChangeText={setDistRenques} keyboardType="number-pad" />
+        <TextInput label="Número de linhas no renque" style={styles.input} value={numLinhasRenque}  onChangeText={setNumLinhasRenque} keyboardType="number-pad"/>
+        <TextInput label="Distância entre linhas (m)" style={styles.input} value={distLinhas}  onChangeText={setDistLinhas} keyboardType="number-pad"/>
+        <TextInput label="Distância entre árvores (m)" style={styles.input} value={distArvores}  onChangeText={setDistArvores} keyboardType="number-pad"/>
+
+        {etapa2Visivel && (
+          <>
+            <TextInput label="Área por árvore (m²)" style={styles.input} value={formatarNumeroBR(areaPorArvore) || ''} editable={false} />
+            <TextInput label="Densidade arbórea (árv./ha)" style={styles.input} value={String(densidadeArborea)} editable={false} />
+
+            {[1, 2, 3, 4, 5].map((index) => (
+              <TextInput
+                key={index}
+                label={`Parcela Preliminar ${index} (árvores)`}
+                keyboardType="number-pad"
+                value={
+                  index === 1 ? parcelaPreliminar1 :
+                    index === 2 ? parcelaPreliminar2 :
+                      index === 3 ? parcelaPreliminar3 :
+                        index === 4 ? parcelaPreliminar4 :
+                          parcelaPreliminar5
+                }
+                onChangeText={
+                  index === 1 ? setParcelaPreliminar1 :
+                    index === 2 ? setParcelaPreliminar2 :
+                      index === 3 ? setParcelaPreliminar3 :
+                        index === 4 ? setParcelaPreliminar4 :
+                          setParcelaPreliminar5
+                }
+                style={styles.input}
+              />
+            ))}
+
+            <TouchableOpacity onPress={saveData} style={styles.button}>
+              <Text style={styles.buttonText}>Salvar</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

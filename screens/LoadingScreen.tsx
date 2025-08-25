@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, ActivityIndicator, StyleSheet, Text, Image } from 'react-native';
+import { View, ActivityIndicator, Text, Image } from 'react-native';
 import style from '../styles/LoadingScreen.styles';
 import colors from '@/utils/colors';
 
 const LoadingScreen = () => {
   return (
     <View style={style.container}>
-      <Image source={require('../assets/images/ilpflogo_.png')} style={style.mainLogo} />
+      <Image source={require('../assets/images/icon.png')} style={style.mainLogo} />
       <ActivityIndicator size="large" color={colors.placeholder} style={style.activityIndicator} />
       <Text style={style.text}>Integração Lavoura-Pecuária-Floresta</Text>
       <View style={style.logoContainer}>
