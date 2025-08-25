@@ -32,14 +32,16 @@ const EditScreen = () => {
   const [linhasRenque, setLinhasRenque] = useState(String(params.numLinhasRenque));
   const [distLinhas, setDistLinhas] = useState(String(params.distLinhas));
   const [distArvores, setDistArvores] = useState(String(params.distArvores));
-  const [parcela1, setParcela1] = useState(String(params.parcelaPreliminar1));
-  const [parcela2, setParcela2] = useState(String(params.parcelaPreliminar2));
-  const [parcela3, setParcela3] = useState(String(params.parcelaPreliminar3));
-  const [parcela4, setParcela4] = useState(String(params.parcelaPreliminar4));
-  const [parcela5, setParcela5] = useState(String(params.parcelaPreliminar5));
+  const [parcela1, setParcela1] = useState(params.parcelaPreliminar1 ? String(params.parcelaPreliminar1) : '');
+  const [parcela2, setParcela2] = useState(params.parcelaPreliminar2 ? String(params.parcelaPreliminar2) : '');
+  const [parcela3, setParcela3] = useState(params.parcelaPreliminar3 ? String(params.parcelaPreliminar3) : '');
+  const [parcela4, setParcela4] = useState(params.parcelaPreliminar4 ? String(params.parcelaPreliminar4) : '');
+  const [parcela5, setParcela5] = useState(params.parcelaPreliminar5 ? String(params.parcelaPreliminar5) : '');
 
   const [areaPorArvore, setAreaPorArvore] = useState<number | null>(null);
   const [densidadeArborea, setDensidadeArborea] = useState<number | null>(null);
+
+  const isCompleto = params.status === 'completo';
 
   useEffect(() => {
     if (linhasRenque === '1') {
@@ -67,8 +69,14 @@ const EditScreen = () => {
 
   const salvar = async () => {
     const erroPermitido = Config.erroPermitido;
-    try {
+    
+    // Para itens completos, todas as parcelas são obrigatórias
+    if (isCompleto && (!parcela1 || !parcela2 || !parcela3 || !parcela4 || !parcela5)) {
+      alert('Para medições completas, todas as parcelas devem ser preenchidas.');
+      return;
+    }
 
+    try {
       console.log('Valores enviados para updateItem:', {
         id: params.id,
         nome,
@@ -78,13 +86,12 @@ const EditScreen = () => {
         distLinhas: parseFloat(distLinhas),
         distArvores: parseFloat(distArvores),
         erroPermitido,
-        parcela1: parseInt(parcela1),
-        parcela2: parseInt(parcela2),
-        parcela3: parseInt(parcela3),
-        parcela4: parseInt(parcela4),
-        parcela5: parseInt(parcela5),
+        parcela1: parcela1 ? parseInt(parcela1) : undefined,
+        parcela2: parcela2 ? parseInt(parcela2) : undefined,
+        parcela3: parcela3 ? parseInt(parcela3) : undefined,
+        parcela4: parcela4 ? parseInt(parcela4) : undefined,
+        parcela5: parcela5 ? parseInt(parcela5) : undefined,
       });
-
 
       await updateItem(
         params.id,
@@ -95,74 +102,80 @@ const EditScreen = () => {
         parseFloat(distLinhas),
         parseFloat(distArvores),
         erroPermitido,
-        parseInt(parcela1),
-        parseInt(parcela2),
-        parseInt(parcela3),
-        parseInt(parcela4),
-        parseInt(parcela5)
+        parcela1 ? parseInt(parcela1) : undefined,
+        parcela2 ? parseInt(parcela2) : undefined,
+        parcela3 ? parseInt(parcela3) : undefined,
+        parcela4 ? parseInt(parcela4) : undefined,
+        parcela5 ? parseInt(parcela5) : undefined
       );
 
-      const areaPorArvoreCalc = areaPorArvore!;
-      const densidadeArboreaCalc = densidadeArborea!;
-      const taxaOcupacaoSolo = calcularTaxaOcupacaoSolo(
-        parseFloat(renques),
-        parseInt(linhasRenque),
-        parseFloat(distLinhas)
-      );
-      const totalArvores = calcularTotalArvores(parseFloat(area), densidadeArboreaCalc);
-      const { dimensao1, dimensao2, areaTotal } = calcularDimensoesParcela(
-        parseFloat(distArvores),
-        parseFloat(renques),
-        parseInt(linhasRenque),
-        parseFloat(distLinhas)
-      );
-      const densidadesPreliminares = [
-        calcularDensidadeParcela(+parcela1, areaTotal),
-        calcularDensidadeParcela(+parcela2, areaTotal),
-        calcularDensidadeParcela(+parcela3, areaTotal),
-        calcularDensidadeParcela(+parcela4, areaTotal),
-        calcularDensidadeParcela(+parcela5, areaTotal),
-      ];
-      const numParcelasCalculado = calcularNumParcelas(
-        parseFloat(area),
-        areaTotal,
-        densidadesPreliminares,
-        erroPermitido
-      );
-      const distanciaEntreParcelas = calcularDistanciaEntreParcelas(parseFloat(area), numParcelasCalculado);
-      const mediaParcelas = (parseInt(parcela1) + parseInt(parcela2) + parseInt(parcela3) + parseInt(parcela4) + parseInt(parcela5)) / 5;
-      const totalArvoresMonitoradas = calcularTotalArvoresMonitoradas(numParcelasCalculado, mediaParcelas);
-      const numArvoreParcela = calcularNumArvoresParcelas(areaTotal, areaPorArvoreCalc);
+      // Se todas as parcelas foram preenchidas, navegar para resultados
+      if (parcela1 && parcela2 && parcela3 && parcela4 && parcela5) {
+        const areaPorArvoreCalc = areaPorArvore!;
+        const densidadeArboreaCalc = densidadeArborea!;
+        const taxaOcupacaoSolo = calcularTaxaOcupacaoSolo(
+          parseFloat(renques),
+          parseInt(linhasRenque),
+          parseFloat(distLinhas)
+        );
+        const totalArvores = calcularTotalArvores(parseFloat(area), densidadeArboreaCalc);
+        const { dimensao1, dimensao2, areaTotal } = calcularDimensoesParcela(
+          parseFloat(distArvores),
+          parseFloat(renques),
+          parseInt(linhasRenque),
+          parseFloat(distLinhas)
+        );
+        const densidadesPreliminares = [
+          calcularDensidadeParcela(+parcela1, areaTotal),
+          calcularDensidadeParcela(+parcela2, areaTotal),
+          calcularDensidadeParcela(+parcela3, areaTotal),
+          calcularDensidadeParcela(+parcela4, areaTotal),
+          calcularDensidadeParcela(+parcela5, areaTotal),
+        ];
+        const numParcelasCalculado = calcularNumParcelas(
+          parseFloat(area),
+          areaTotal,
+          densidadesPreliminares,
+          erroPermitido
+        );
+        const distanciaEntreParcelas = calcularDistanciaEntreParcelas(parseFloat(area), numParcelasCalculado);
+        const mediaParcelas = (parseInt(parcela1) + parseInt(parcela2) + parseInt(parcela3) + parseInt(parcela4) + parseInt(parcela5)) / 5;
+        const totalArvoresMonitoradas = calcularTotalArvoresMonitoradas(numParcelasCalculado, mediaParcelas);
+        const numArvoreParcela = calcularNumArvoresParcelas(areaTotal, areaPorArvoreCalc);
 
-      navigation.navigate('MainTabs', {
-        screen: 'Result', 
-        params: {
-        nome_medicao: nome,
-        area: parseFloat(area),
-        distRenques: parseFloat(renques),
-        numLinhasRenque: parseInt(linhasRenque),
-        distLinhas: parseFloat(distLinhas),
-        distArvores: parseFloat(distArvores),
-        erroPermitido,
-        parcelaPreliminar1: parseInt(parcela1),
-        parcelaPreliminar2: parseInt(parcela2),
-        parcelaPreliminar3: parseInt(parcela3),
-        parcelaPreliminar4: parseInt(parcela4),
-        parcelaPreliminar5: parseInt(parcela5),
-        areaPorArvore: areaPorArvoreCalc,
-        densidadeArborea: densidadeArboreaCalc,
-        taxaOcupacaoSolo,
-        totalArvores,
-        dimensao1,
-        dimensao2,
-        areaTotal,
-        densidadesPreliminares,
-        numParcelasCalculado,
-        distanciaEntreParcelas,
-        numArvoreParcela,
-        totalArvoresMonitoradas,
-        },
-      });
+        navigation.navigate('MainTabs', {
+          screen: 'Result', 
+          params: {
+            nome_medicao: nome,
+            area: parseFloat(area),
+            distRenques: parseFloat(renques),
+            numLinhasRenque: parseInt(linhasRenque),
+            distLinhas: parseFloat(distLinhas),
+            distArvores: parseFloat(distArvores),
+            erroPermitido,
+            parcelaPreliminar1: parseInt(parcela1),
+            parcelaPreliminar2: parseInt(parcela2),
+            parcelaPreliminar3: parseInt(parcela3),
+            parcelaPreliminar4: parseInt(parcela4),
+            parcelaPreliminar5: parseInt(parcela5),
+            areaPorArvore: areaPorArvoreCalc,
+            densidadeArborea: densidadeArboreaCalc,
+            taxaOcupacaoSolo,
+            totalArvores,
+            dimensao1,
+            dimensao2,
+            areaTotal,
+            densidadesPreliminares,
+            numParcelasCalculado,
+            distanciaEntreParcelas,
+            numArvoreParcela,
+            totalArvoresMonitoradas,
+          },
+        });
+      } else {
+        // Se nem todas as parcelas foram preenchidas, voltar para a lista
+        navigation.navigate('MainTabs', { screen: 'List' });
+      }
     } catch (error) {
       console.error('Erro ao atualizar:', error);
       alert('Erro ao salvar alterações.');
@@ -198,6 +211,14 @@ const EditScreen = () => {
           </>
         )}
 
+        <Text style={styles.sectionTitle}>Parcelas Preliminares</Text>
+        <Text style={{ color: '#666', marginBottom: 16 }}>
+          {isCompleto 
+            ? 'Edite as contagens das parcelas conforme necessário:' 
+            : 'Preencha as contagens das parcelas para completar a medição:'
+          }
+        </Text>
+
         {[1, 2, 3, 4, 5].map((i) => (
           <TextInput
             key={i}
@@ -218,11 +239,14 @@ const EditScreen = () => {
                       setParcela5
             }
             style={styles.input}
+            placeholder={isCompleto ? 'Número de árvores' : 'Deixe vazio se ainda não contou'}
           />
         ))}
 
         <TouchableOpacity onPress={salvar} style={styles.button}>
-          <Text style={styles.buttonText}>Salvar Alterações</Text>
+          <Text style={styles.buttonText}>
+            {isCompleto ? 'Salvar Alterações' : 'Salvar e Finalizar'}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, FlatList, Alert } from 'react-native';
-import { Text, Card, Divider, IconButton, FAB, Appbar } from 'react-native-paper';
+import { Text, Card, Divider, IconButton, FAB } from 'react-native-paper';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getAllItems, deleteItem, initDb } from '../database/db';
 import { RootStackParamList } from '@/utils/types';
@@ -22,7 +22,9 @@ import {
 import { formatarNumeroBR } from '@/utils/Numberformatter';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import StandardHeader from '@/components/StandartHeader';
 
+// Usando o tipo do banco de dados que permite null nas parcelas
 type InventoryItem = {
   id: number;
   nome_medicao: string;
@@ -32,11 +34,12 @@ type InventoryItem = {
   distLinhas: number;
   distArvores: number;
   erroPermitido: number;
-  parcelaPreliminar1: number;
-  parcelaPreliminar2: number;
-  parcelaPreliminar3: number;
-  parcelaPreliminar4: number;
-  parcelaPreliminar5: number;
+  parcelaPreliminar1: number | null;
+  parcelaPreliminar2: number | null;
+  parcelaPreliminar3: number | null;
+  parcelaPreliminar4: number | null;
+  parcelaPreliminar5: number | null;
+  status: 'incompleto' | 'completo';
   created_at: string;
   updated_at: string;
 };
@@ -102,10 +105,31 @@ useEffect(() => {
   };
 
   const navigateToEdit = (item: InventoryItem) => {
-    navigation.navigate('Edit', { ...item });
+    if (item.status === 'incompleto') {
+      // Para itens incompletos, navegar para o formulário para continuar
+      navigation.navigate('Form', { ...item });
+    } else {
+      // Para itens completos, navegar para edição normal
+      navigation.navigate('Edit', { ...item });
+    }
   };
 
   const navigateToResult = (item: InventoryItem) => {
+    if (item.status === 'incompleto') {
+      // Para itens incompletos, navegar para o formulário para continuar
+      navigation.navigate('Form', { ...item });
+      return;
+    }
+
+    // Verificar se todas as parcelas estão preenchidas antes de calcular
+    if (!item.parcelaPreliminar1 || !item.parcelaPreliminar2 || !item.parcelaPreliminar3 || 
+        !item.parcelaPreliminar4 || !item.parcelaPreliminar5) {
+      // Se alguma parcela estiver null, tratar como incompleto
+      navigation.navigate('Form', { ...item });
+      return;
+    }
+
+    // Para itens completos, calcular e mostrar resultados
     const areaPorArvore = calcularAreaPorArvore(
       item.distRenques,
       item.distArvores,
@@ -154,6 +178,11 @@ useEffect(() => {
 
     navigation.navigate('Result', {
       ...item,
+      parcelaPreliminar1: item.parcelaPreliminar1,
+      parcelaPreliminar2: item.parcelaPreliminar2,
+      parcelaPreliminar3: item.parcelaPreliminar3,
+      parcelaPreliminar4: item.parcelaPreliminar4,
+      parcelaPreliminar5: item.parcelaPreliminar5,
       areaPorArvore,
       densidadeArborea,
       taxaOcupacaoSolo,
@@ -169,23 +198,75 @@ useEffect(() => {
     });
   };
 
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Appbar.Header>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialCommunityIcons name="format-list-bulleted" size={24} color="#666" style={{ marginRight: 8 }} />
-          <Text style={{
-            fontSize: 25,
-            color: '#666',
-            fontFamily: 'Roboto-Medium',
-            letterSpacing: 0.5,
-            fontWeight: 'bold'
+  const renderStatusChip = (item: InventoryItem) => {
+    if (item.status === 'incompleto') {
+      return (
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+          <MaterialCommunityIcons 
+            name="alert-circle" 
+            size={16} 
+            color="#ff6b35" 
+            style={{ marginRight: 6 }}
+          />
+          <Text style={{ 
+            color: '#ff6b35', 
+            fontSize: 12, 
+            fontWeight: 'bold',
+            textTransform: 'uppercase' 
           }}>
-            Medições
+            INCOMPLETO
           </Text>
         </View>
-      </Appbar.Header>
+      );
+    }
+    
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+        <MaterialCommunityIcons 
+          name="check-circle" 
+          size={16} 
+          color="#4caf50" 
+          style={{ marginRight: 6 }}
+        />
+        <Text style={{ 
+          color: '#4caf50', 
+          fontSize: 12, 
+          fontWeight: 'bold',
+          textTransform: 'uppercase' 
+        }}>
+          COMPLETO
+        </Text>
+      </View>
+    );
+  };
 
+  const getCardStyle = (item: InventoryItem) => {
+    switch (item.status) {
+      case 'incompleto':
+        return styles.cardIncomplete;
+      case 'completo':
+        return styles.cardComplete;
+      default:
+        return styles.card;
+    }
+  };
+
+  const headerActions = [
+    {
+      icon: 'refresh',
+      label: 'Atualizar',
+      onPress: fetchData,
+    }
+  ];
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+       <StandardHeader
+        title="Medições"
+        subtitle={`${data.length} ${data.length === 1 ? 'medição' : 'medições'} salva${data.length === 1 ? '' : 's'}`}
+        icon="format-list-bulleted"
+        rightActions={headerActions}
+      />
       <View style={styles.container}>
         {/* Botão flutuante para criar nova medição */}
         <FAB
@@ -194,6 +275,7 @@ useEffect(() => {
           style={styles.fab}
           color="#fff"
         />
+        
         {/* Lista de medições ou mensagem de vazio */}
         <FlatList
           data={data}
@@ -208,42 +290,66 @@ useEffect(() => {
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
             <View>
-              <Card style={styles.card} onPress={() => navigateToResult(item)}>
+              <Card style={getCardStyle(item)} onPress={() => navigateToResult(item)}>
                 <Card.Title
                   title={item.nome_medicao}
                   subtitle={`Criado em: ${new Date(item.created_at).toLocaleDateString()}`}
-                  titleStyle={{ fontWeight: 'bold', fontSize: 25, color: colors.primary }}
-                  subtitleStyle={{ color: colors.background }}
+                  titleStyle={{ 
+                    fontWeight: 'bold', 
+                    fontSize: 20, 
+                    color: item.status === 'incompleto' ? '#e65100' : colors.primary 
+                  }}
+                  subtitleStyle={{ 
+                    color: item.status === 'incompleto' ? '#bf360c' : colors.primary 
+                  }}
                 />
                 <Card.Content>
                   <View style={styles.row}>
-                    <Text style={styles.label}>Área:</Text>
-                    <Text style={styles.value}>{formatarNumeroBR(item.area)} ha</Text>
+                    <Text style={[styles.label, { 
+                      color: item.status === 'incompleto' ? '#e65100' : styles.label.color 
+                    }]}>Área:</Text>
+                    <Text style={[styles.value, { 
+                      color: item.status === 'incompleto' ? '#bf360c' : styles.value.color 
+                    }]}>{formatarNumeroBR(item.area)} ha</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={styles.label}>Renques:</Text>
-                    <Text style={styles.value}>{formatarNumeroBR(item.distRenques)} m</Text>
+                    <Text style={[styles.label, { 
+                      color: item.status === 'incompleto' ? '#e65100' : styles.label.color 
+                    }]}>Renques:</Text>
+                    <Text style={[styles.value, { 
+                      color: item.status === 'incompleto' ? '#bf360c' : styles.value.color 
+                    }]}>{formatarNumeroBR(item.distRenques)} m</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={styles.label}>Linhas/renque:</Text>
-                    <Text style={styles.value}>{item.numLinhasRenque}</Text>
+                    <Text style={[styles.label, { 
+                      color: item.status === 'incompleto' ? '#e65100' : styles.label.color 
+                    }]}>Linhas/renque:</Text>
+                    <Text style={[styles.value, { 
+                      color: item.status === 'incompleto' ? '#bf360c' : styles.value.color 
+                    }]}>{item.numLinhasRenque}</Text>
                   </View>
                   <View style={styles.row}>
-                    <Text style={styles.label}>Erro permitido:</Text>
-                    <Text style={styles.value}>{formatarNumeroBR(item.erroPermitido)}%</Text>
+                    <Text style={[styles.label, { 
+                      color: item.status === 'incompleto' ? '#e65100' : styles.label.color 
+                    }]}>Erro permitido:</Text>
+                    <Text style={[styles.value, { 
+                      color: item.status === 'incompleto' ? '#bf360c' : styles.value.color 
+                    }]}>{formatarNumeroBR(item.erroPermitido)}%</Text>
                   </View>
+                  
+                  {renderStatusChip(item)}
                 </Card.Content>
-                <Card.Actions style={{ justifyContent: 'flex-end' }}>
+                <Card.Actions style={{ justifyContent: 'flex-start' }}>
                   <IconButton
-                    icon="pencil-outline"
-                    iconColor={colors.primary}
+                    icon={item.status === 'incompleto' ? 'play-circle-outline' : 'pencil-outline'}
+                    iconColor={item.status === 'incompleto' ? '#ff6b35' : colors.primary}
                     containerColor="transparent"
                     onPress={() => navigateToEdit(item)}
-                    accessibilityLabel="Editar medição"
+                    accessibilityLabel={item.status === 'incompleto' ? 'Continuar medição' : 'Editar medição'}
                   />
                   <IconButton
                     icon="trash-can-outline"
-                    iconColor={colors.primary}
+                    iconColor={item.status === 'incompleto' ? '#ff6b35' : colors.primary}
                     containerColor="transparent"
                     onPress={() => handleDelete(item.id)}
                     accessibilityLabel="Deletar medição"

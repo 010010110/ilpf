@@ -1,5 +1,22 @@
 export type RootStackParamList = {
-  Form: undefined;
+  Form: {
+    id?: number;
+    nome_medicao?: string;
+    area?: number;
+    distRenques?: number;
+    numLinhasRenque?: number;
+    distLinhas?: number;
+    distArvores?: number;
+    erroPermitido?: number;
+    parcelaPreliminar1?: number | null;
+    parcelaPreliminar2?: number | null;
+    parcelaPreliminar3?: number | null;
+    parcelaPreliminar4?: number | null;
+    parcelaPreliminar5?: number | null;
+    status?: 'incompleto' | 'completo';
+    created_at?: string;
+    updated_at?: string;
+  };
   List: undefined;
   About: undefined;
   Settings: undefined;
@@ -16,11 +33,12 @@ export type RootStackParamList = {
     distLinhas: number;
     distArvores: number;
     erroPermitido: number;
-    parcelaPreliminar1: number;
-    parcelaPreliminar2: number;
-    parcelaPreliminar3: number;
-    parcelaPreliminar4: number;
-    parcelaPreliminar5: number;
+    parcelaPreliminar1: number | null;
+    parcelaPreliminar2: number | null;
+    parcelaPreliminar3: number | null;
+    parcelaPreliminar4: number | null;
+    parcelaPreliminar5: number | null;
+    status: 'incompleto' | 'completo';
     created_at?: string;
     updated_at?: string;
   };
@@ -56,7 +74,24 @@ export type RootStackParamList = {
 
 export type MainTabsParamList = {
   List: undefined;
-  Form: undefined;
+  Form: {
+    id?: number;
+    nome_medicao?: string;
+    area?: number;
+    distRenques?: number;
+    numLinhasRenque?: number;
+    distLinhas?: number;
+    distArvores?: number;
+    erroPermitido?: number;
+    parcelaPreliminar1?: number | null;
+    parcelaPreliminar2?: number | null;
+    parcelaPreliminar3?: number | null;
+    parcelaPreliminar4?: number | null;
+    parcelaPreliminar5?: number | null;
+    status?: 'incompleto' | 'completo';
+    created_at?: string;
+    updated_at?: string;
+  };
   Result: {
     nome_medicao: string;
     area: number;
@@ -86,4 +121,3 @@ export type MainTabsParamList = {
   About: undefined;
   Settings: undefined;
 };
-
