@@ -315,7 +315,7 @@ useEffect(() => {
                   <View style={styles.row}>
                     <Text style={[styles.label, { 
                       color: item.status === 'incompleto' ? '#e65100' : styles.label.color 
-                    }]}>Renques:</Text>
+                    }]}>Dist. Renques:</Text>
                     <Text style={[styles.value, { 
                       color: item.status === 'incompleto' ? '#bf360c' : styles.value.color 
                     }]}>{formatarNumeroBR(item.distRenques)} m</Text>
@@ -327,14 +327,6 @@ useEffect(() => {
                     <Text style={[styles.value, { 
                       color: item.status === 'incompleto' ? '#bf360c' : styles.value.color 
                     }]}>{item.numLinhasRenque}</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={[styles.label, { 
-                      color: item.status === 'incompleto' ? '#e65100' : styles.label.color 
-                    }]}>Erro permitido:</Text>
-                    <Text style={[styles.value, { 
-                      color: item.status === 'incompleto' ? '#bf360c' : styles.value.color 
-                    }]}>{formatarNumeroBR(item.erroPermitido)}%</Text>
                   </View>
                   
                   {renderStatusChip(item)}

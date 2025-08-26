@@ -1,3 +1,5 @@
+import { Alert } from "react-native";
+
 export function formatarNumeroBR(numero: number | null) {
   if(numero === null) return ''
   const partes = numero.toFixed(2).split('.');
@@ -20,25 +22,26 @@ export function formatarNumeroBRNoDecimal(numero: number | null) {
   return `${inteiroFormatado}`;
 }
 
-export function aplicarMascaraNumero(valor: string): string {
- // Remove tudo que não for número ou vírgula
-  let clean = valor.replace(/[^\d,]/g, '');
+ export function limparEntradaDecimal(valor: string): string {
+    let limpo = valor.replace(/[^\d.]/g, '');
+    const partes = limpo.split('.');
+    if (partes.length > 2) {
+      limpo = partes[0] + '.' + partes.slice(1).join('');
+    }
+    if (partes.length === 2 && partes[1].length > 2) {
+      limpo = partes[0] + '.' + partes[1].substring(0, 2);
+    }
+    return limpo;
+  };
 
-  // Se não há vírgula mas o usuário digitou, adiciona
-  if (clean.endsWith(',')) return clean;
+  export function limparEntradaInteira(valor: string): string {
+    return valor.replace(/[^\d]/g, '');
+  };
 
-  const partes = clean.split(',');
-  let inteiro = partes[0];
-  let decimal = partes[1] || '';
-
-  // Limita decimal a no máximo 2 dígitos
-  if (decimal.length > 2) decimal = decimal.slice(0, 2);
-
-  // Adiciona separador de milhar
-  inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-  // Se o usuário digitou a vírgula mas ainda não completou as casas decimais
-  if (clean.includes(',') && decimal === '') return `${inteiro},`;
-
-  return decimal ? `${inteiro},${decimal}` : inteiro;
-}
+  export function alertarVirgula() {
+    Alert.alert(
+      'Formato Numérico',
+      'Use ponto (.) para separar decimais.\n\nExemplo correto: 15.5\nExemplo incorreto: 15,5',
+      [{ text: 'Entendi' }]
+    );
+  };

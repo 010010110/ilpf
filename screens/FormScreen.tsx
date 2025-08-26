@@ -19,7 +19,7 @@ import {
 import { Appbar, TextInput, Card, Checkbox } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Config } from '@/utils/config';
-import { formatarNumeroBR } from '@/utils/Numberformatter';
+import { alertarVirgula, formatarNumeroBR, limparEntradaDecimal, limparEntradaInteira } from '@/utils/Numberformatter';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import colors from '@/utils/colors';
 import StandardHeader from '@/components/StandartHeader';
@@ -68,6 +68,28 @@ const FormScreen = () => {
   const [parcelaPreliminar4, setParcelaPreliminar4] = useState(params?.parcelaPreliminar4 ? String(params.parcelaPreliminar4) : '');
   const [parcelaPreliminar5, setParcelaPreliminar5] = useState(params?.parcelaPreliminar5 ? String(params.parcelaPreliminar5) : '');
 
+
+  // Função para validar entrada decimal com alerta de vírgula
+  const handleDecimalInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
+    if (texto.includes(',')) {
+      alertarVirgula();
+      setter(0)
+      return 0;
+    }
+    const valorLimpo = limparEntradaDecimal(texto);
+    setter(valorLimpo);
+  };
+
+  // Função para validar entrada inteira com alerta de vírgula
+  const handleIntegerInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
+    if (texto.includes(',')) {
+      alertarVirgula();
+      setter(0)
+      return;
+    }
+    const valorLimpo = limparEntradaInteira(texto);
+    setter(valorLimpo);
+  };
   // Efeito para calcular quando linha única
   useEffect(() => {
     if (numLinhasRenque === '1') {
@@ -442,7 +464,7 @@ const FormScreen = () => {
       <TextInput
         label="Área a ser inventariada (ha)"
         value={area}
-        onChangeText={setArea}
+        onChangeText={(text) => handleDecimalInput(text, setArea, 'Área')}
         keyboardType="decimal-pad"
         style={styles.input}
       />
@@ -450,7 +472,7 @@ const FormScreen = () => {
       <TextInput
         label="Distância entre renques (m)"
         value={distRenques}
-        onChangeText={setDistRenques}
+        onChangeText={(text) => handleDecimalInput(text, setDistRenques, 'Distância entre renques')}
         keyboardType="decimal-pad"
         style={styles.input}
       />
@@ -458,7 +480,7 @@ const FormScreen = () => {
       <TextInput
         label="Número de linhas no renque"
         value={numLinhasRenque}
-        onChangeText={setNumLinhasRenque}
+        onChangeText={(text) => handleIntegerInput(text, setNumLinhasRenque, 'Número de linhas')}
         keyboardType="number-pad"
         style={styles.input}
       />
@@ -466,7 +488,11 @@ const FormScreen = () => {
       <TextInput
         label="Distância entre as linhas no renque (m)"
         value={distLinhas}
-        onChangeText={(text) => numLinhasRenque !== '1' && setDistLinhas(text)}
+        onChangeText={(text) => {
+          if (numLinhasRenque !== '1') {
+            handleDecimalInput(text, setDistLinhas, 'Distância entre linhas');
+          }
+        }}
         editable={numLinhasRenque !== '1'}
         keyboardType="decimal-pad"
         style={styles.input}
@@ -480,7 +506,7 @@ const FormScreen = () => {
       <TextInput
         label="Distância entre as árvores na linha (m)"
         value={distArvores}
-        onChangeText={setDistArvores}
+        onChangeText={(text) => handleDecimalInput(text, setDistArvores, 'Distância entre árvores')}
         keyboardType="decimal-pad"
         style={styles.input}
       />

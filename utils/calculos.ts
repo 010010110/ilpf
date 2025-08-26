@@ -1,4 +1,3 @@
-// Função para calcular a área por árvore
 export const calcularAreaPorArvore = (
   distRenques: number,
   distArvores: number,
@@ -12,34 +11,26 @@ export const calcularAreaPorArvore = (
   }
 };
 
-// Função para calcular a densidade arbórea
 export const calcularDensidadeArborea = (areaPorArvore: number): number => {
   return Math.round(10000 / areaPorArvore);
 };
 
-// Função para calcular a taxa de ocupação do solo
 export const calcularTaxaOcupacaoSolo = (
   distRenques: number,
   numLinhasRenque: number,
   distLinhas: number
 ): number => {
-  // Arredonda (100 / Distância entre renques) para 1 casa decimal
-  const arredondado = Number((100 / distRenques).toFixed(1));
-
-  // Calcula o restante da fórmula
-  const taxaOcupacao =
-    (arredondado * ((numLinhasRenque - 1) * distLinhas + 2) * 100) / 10000;
-
-  // Arredonda para 1 casa decimal como indicado na fórmula
-  return taxaOcupacao;
+  const numerador = distLinhas * (numLinhasRenque - 1) + 2;
+  const denominador = distRenques + (numLinhasRenque - 1) * distLinhas;
+  const resultado = numerador / denominador;
+  
+  return resultado * 100;
 };
 
-// Função para calcular o total de árvores
 export const calcularTotalArvores = (area: number, densidadeArborea: number): number => {
   return area * densidadeArborea;
 };
 
-// Função para calcular as dimensões da parcela
 export const calcularDimensoesParcela = (
   distArvores: number,
   distRenques: number,
@@ -52,12 +43,10 @@ export const calcularDimensoesParcela = (
   return { dimensao1, dimensao2, areaTotal };
 };
 
-// Função para calcular a densidade de uma parcela preliminar
 export const calcularDensidadeParcela = (numArvoresParcela: number, areaParcela: number): number => {
   return Math.round((numArvoresParcela * 10000) / areaParcela);
 };
 
-// Função para calcular o número de parcelas a serem instaladas (D24)
 export const calcularNumParcelas = (
   area: number,               // D8: Área em hectares
   areaParcela: number,        // G22: Área da parcela em m²
@@ -105,15 +94,13 @@ export const calcularNumArvoresParcelas = (areaTotal: number, areaPorArvore: num
   return Math.round(areaTotal / areaPorArvore)
 }
 
-// Função para calcular a distância entre parcelas
 export const calcularDistanciaEntreParcelas = (area: number, numParcelas: number): number => {
   return Math.sqrt((area * 10000) / numParcelas);
 };
 
-// Função para calcular o total de árvores monitoradas
 export const calcularTotalArvoresMonitoradas = (
   numParcelas: number,
   mediaArvoresPorParcela: number
 ): number => {
-  return Math.ceil(numParcelas * mediaArvoresPorParcela);
+  return Math.round(numParcelas * mediaArvoresPorParcela);
 };

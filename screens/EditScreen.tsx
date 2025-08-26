@@ -17,7 +17,7 @@ import {
   calcularTotalArvoresMonitoradas,
   calcularNumArvoresParcelas,
 } from '@/utils/calculos';
-import { formatarNumeroBR } from '@/utils/Numberformatter';
+import { alertarVirgula, formatarNumeroBR, limparEntradaDecimal, limparEntradaInteira } from '@/utils/Numberformatter';
 import { Config } from '@/utils/config';
 import { RootStackParamList } from '@/utils/types';
 
@@ -26,10 +26,10 @@ const EditScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const params = route.params as any;
 
-  const [nome, setNome] = useState(params.nome_medicao);
+  const [nomeMedicao, setNomeMedicao] = useState(params.nome_medicao);
   const [area, setArea] = useState(String(params.area));
-  const [renques, setRenques] = useState(String(params.distRenques));
-  const [linhasRenque, setLinhasRenque] = useState(String(params.numLinhasRenque));
+  const [distRenques, setDistRenques] = useState(String(params.distRenques));
+  const [numLinhasRenque, setNumLinhasRenque] = useState(String(params.numLinhasRenque));
   const [distLinhas, setDistLinhas] = useState(String(params.distLinhas));
   const [distArvores, setDistArvores] = useState(String(params.distArvores));
   const [parcela1, setParcela1] = useState(params.parcelaPreliminar1 ? String(params.parcelaPreliminar1) : '');
@@ -42,20 +42,41 @@ const EditScreen = () => {
   const [densidadeArborea, setDensidadeArborea] = useState<number | null>(null);
 
   const isCompleto = params.status === 'completo';
+  // Função para validar entrada decimal com alerta de vírgula
+    const handleDecimalInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
+      if (texto.includes(',')) {
+        alertarVirgula();
+        setter(0)
+        return 0;
+      }
+      const valorLimpo = limparEntradaDecimal(texto);
+      setter(valorLimpo);
+    };
+  
+    // Função para validar entrada inteira com alerta de vírgula
+    const handleIntegerInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
+      if (texto.includes(',')) {
+        alertarVirgula();
+        setter(0)
+        return;
+      }
+      const valorLimpo = limparEntradaInteira(texto);
+      setter(valorLimpo);
+    };
 
   useEffect(() => {
-    if (linhasRenque === '1') {
-      setDistLinhas(renques);
+    if (numLinhasRenque === '1') {
+      setDistLinhas(distRenques);
     }
-  }, [linhasRenque, renques]);
+  }, [numLinhasRenque, distRenques]);
 
   useEffect(() => {
-    const preenchidos = area && renques && linhasRenque && distLinhas && distArvores;
+    const preenchidos = area && distRenques && numLinhasRenque && distLinhas && distArvores;
     if (preenchidos) {
       const areaCalc = calcularAreaPorArvore(
-        parseFloat(renques),
+        parseFloat(distRenques),
         parseFloat(distArvores),
-        parseInt(linhasRenque),
+        parseInt(numLinhasRenque),
         parseFloat(distLinhas)
       );
       const densidade = calcularDensidadeArborea(areaCalc);
@@ -65,7 +86,7 @@ const EditScreen = () => {
       setAreaPorArvore(null);
       setDensidadeArborea(null);
     }
-  }, [area, renques, linhasRenque, distLinhas, distArvores]);
+  }, [area, distRenques, numLinhasRenque, distLinhas, distArvores]);
 
   const salvar = async () => {
     const erroPermitido = Config.erroPermitido;
@@ -79,10 +100,10 @@ const EditScreen = () => {
     try {
       console.log('Valores enviados para updateItem:', {
         id: params.id,
-        nome,
+        nome: nomeMedicao,
         area: parseFloat(area),
-        renques: parseFloat(renques),
-        linhasRenque: parseInt(linhasRenque),
+        renques: parseFloat(distRenques),
+        linhasRenque: parseInt(numLinhasRenque),
         distLinhas: parseFloat(distLinhas),
         distArvores: parseFloat(distArvores),
         erroPermitido,
@@ -95,10 +116,10 @@ const EditScreen = () => {
 
       await updateItem(
         params.id,
-        nome,
+        nomeMedicao,
         parseFloat(area),
-        parseFloat(renques),
-        parseInt(linhasRenque),
+        parseFloat(distRenques),
+        parseInt(numLinhasRenque),
         parseFloat(distLinhas),
         parseFloat(distArvores),
         erroPermitido,
@@ -114,15 +135,15 @@ const EditScreen = () => {
         const areaPorArvoreCalc = areaPorArvore!;
         const densidadeArboreaCalc = densidadeArborea!;
         const taxaOcupacaoSolo = calcularTaxaOcupacaoSolo(
-          parseFloat(renques),
-          parseInt(linhasRenque),
+          parseFloat(distRenques),
+          parseInt(numLinhasRenque),
           parseFloat(distLinhas)
         );
         const totalArvores = calcularTotalArvores(parseFloat(area), densidadeArboreaCalc);
         const { dimensao1, dimensao2, areaTotal } = calcularDimensoesParcela(
           parseFloat(distArvores),
-          parseFloat(renques),
-          parseInt(linhasRenque),
+          parseFloat(distRenques),
+          parseInt(numLinhasRenque),
           parseFloat(distLinhas)
         );
         const densidadesPreliminares = [
@@ -146,10 +167,10 @@ const EditScreen = () => {
         navigation.navigate('MainTabs', {
           screen: 'Result', 
           params: {
-            nome_medicao: nome,
+            nome_medicao: nomeMedicao,
             area: parseFloat(area),
-            distRenques: parseFloat(renques),
-            numLinhasRenque: parseInt(linhasRenque),
+            distRenques: parseFloat(distRenques),
+            numLinhasRenque: parseInt(numLinhasRenque),
             distLinhas: parseFloat(distLinhas),
             distArvores: parseFloat(distArvores),
             erroPermitido,
@@ -190,7 +211,7 @@ const EditScreen = () => {
       </Appbar.Header>
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <TextInput label="Nome da Medição" value={nome} onChangeText={setNome} style={styles.input} />
+        {/* <TextInput label="Nome da Medição" value={nome} onChangeText={setNome} style={styles.input} />
         <TextInput label="Área (ha)" value={area} onChangeText={setArea} style={styles.input} keyboardType="number-pad" />
         <TextInput label="Distância entre renques (m)" value={renques} onChangeText={setRenques} style={styles.input}  keyboardType="number-pad"/>
         <TextInput label="Número de linhas no renque" value={linhasRenque} onChangeText={setLinhasRenque} style={styles.input} keyboardType="number-pad"/>
@@ -202,7 +223,64 @@ const EditScreen = () => {
           editable={linhasRenque !== '1'}
           style={styles.input}
         />
-        <TextInput label="Distância entre árvores (m)" value={distArvores} onChangeText={setDistArvores} style={styles.input} keyboardType="number-pad"/>
+        <TextInput label="Distância entre árvores (m)" value={distArvores} onChangeText={setDistArvores} style={styles.input} keyboardType="number-pad"/> */}
+
+          <TextInput
+        label="Nome da Medição"
+        value={nomeMedicao}
+        onChangeText={setNomeMedicao}
+        style={styles.input}
+      />
+
+      <TextInput
+        label="Área a ser inventariada (ha)"
+        value={area}
+        onChangeText={(text) => handleDecimalInput(text, setArea, 'Área')}
+        keyboardType="decimal-pad"
+        style={styles.input}
+      />
+
+      <TextInput
+        label="Distância entre renques (m)"
+        value={distRenques}
+        onChangeText={(text) => handleDecimalInput(text, setDistRenques, 'Distância entre renques')}
+        keyboardType="decimal-pad"
+        style={styles.input}
+      />
+
+      <TextInput
+        label="Número de linhas no renque"
+        value={numLinhasRenque}
+        onChangeText={(text) => handleIntegerInput(text, setNumLinhasRenque, 'Número de linhas')}
+        keyboardType="number-pad"
+        style={styles.input}
+      />
+
+      <TextInput
+        label="Distância entre as linhas no renque (m)"
+        value={distLinhas}
+        onChangeText={(text) => {
+          if (numLinhasRenque !== '1') {
+            handleDecimalInput(text, setDistLinhas, 'Distância entre linhas');
+          }
+        }}
+        editable={numLinhasRenque !== '1'}
+        keyboardType="decimal-pad"
+        style={styles.input}
+      />
+      {numLinhasRenque === '1' && (
+        <Text style={{ color: '#666', fontSize: 12, marginTop: -8, marginBottom: 8 }}>
+          Preenchido automaticamente quando há apenas 1 linha
+        </Text>
+      )}
+
+      <TextInput
+        label="Distância entre as árvores na linha (m)"
+        value={distArvores}
+        onChangeText={(text) => handleDecimalInput(text, setDistArvores, 'Distância entre árvores')}
+        keyboardType="decimal-pad"
+        style={styles.input}
+      />
 
         {areaPorArvore !== null && (
           <>
