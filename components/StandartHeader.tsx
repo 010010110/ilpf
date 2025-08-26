@@ -117,7 +117,7 @@ const StandardHeader: React.FC<StandardHeaderProps> = ({
 
 export default StandardHeader;
 
-// Componentes pré-configurados para cada tela
+
 export const ListScreenHeader = () => (
   <StandardHeader
     title="Medições"

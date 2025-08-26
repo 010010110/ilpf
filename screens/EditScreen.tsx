@@ -42,7 +42,7 @@ const EditScreen = () => {
   const [densidadeArborea, setDensidadeArborea] = useState<number | null>(null);
 
   const isCompleto = params.status === 'completo';
-  // Função para validar entrada decimal com alerta de vírgula
+
     const handleDecimalInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
       if (texto.includes(',')) {
         alertarVirgula();
@@ -53,7 +53,7 @@ const EditScreen = () => {
       setter(valorLimpo);
     };
   
-    // Função para validar entrada inteira com alerta de vírgula
+
     const handleIntegerInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
       if (texto.includes(',')) {
         alertarVirgula();
@@ -91,7 +91,7 @@ const EditScreen = () => {
   const salvar = async () => {
     const erroPermitido = Config.erroPermitido;
     
-    // Para itens completos, todas as parcelas são obrigatórias
+
     if (isCompleto && (!parcela1 || !parcela2 || !parcela3 || !parcela4 || !parcela5)) {
       alert('Para medições completas, todas as parcelas devem ser preenchidas.');
       return;
@@ -130,7 +130,7 @@ const EditScreen = () => {
         parcela5 ? parseInt(parcela5) : undefined
       );
 
-      // Se todas as parcelas foram preenchidas, navegar para resultados
+
       if (parcela1 && parcela2 && parcela3 && parcela4 && parcela5) {
         const areaPorArvoreCalc = areaPorArvore!;
         const densidadeArboreaCalc = densidadeArborea!;
@@ -194,7 +194,7 @@ const EditScreen = () => {
           },
         });
       } else {
-        // Se nem todas as parcelas foram preenchidas, voltar para a lista
+
         navigation.navigate('MainTabs', { screen: 'List' });
       }
     } catch (error) {

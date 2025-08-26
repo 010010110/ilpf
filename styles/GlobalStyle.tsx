@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
 import colors from '../utils/colors';
 
-// Estilos globais reutilizáveis
+
 export const GlobalStyles = StyleSheet.create({
-  // Containers
+
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -21,7 +21,7 @@ export const GlobalStyles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   
-  // Cards
+
   card: {
     backgroundColor: colors.surface,
     borderRadius: 12,
@@ -46,7 +46,7 @@ export const GlobalStyles = StyleSheet.create({
     shadowRadius: 8,
   },
   
-  // Cards com status
+
   cardIncomplete: {
     backgroundColor: colors.incomplete.background,
     borderRadius: 12,
@@ -75,7 +75,7 @@ export const GlobalStyles = StyleSheet.create({
     shadowRadius: 4,
   },
   
-  // Textos
+
   titleLarge: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -134,7 +134,7 @@ export const GlobalStyles = StyleSheet.create({
     lineHeight: 16,
   },
   
-  // Botões
+
   buttonPrimary: {
     backgroundColor: colors.primary,
     paddingVertical: 12,
@@ -188,7 +188,7 @@ export const GlobalStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   
-  // Textos dos botões
+
   buttonTextPrimary: {
     color: colors.onPrimary,
     fontSize: 16,
@@ -214,7 +214,7 @@ export const GlobalStyles = StyleSheet.create({
     opacity: 0.6,
   },
   
-  // Inputs
+
   input: {
     backgroundColor: colors.surface,
     borderWidth: 1,
@@ -237,7 +237,7 @@ export const GlobalStyles = StyleSheet.create({
     borderWidth: 2,
   },
   
-  // Layouts
+
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -258,7 +258,7 @@ export const GlobalStyles = StyleSheet.create({
     alignItems: 'center',
   },
   
-  // Espaçamentos
+
   marginSmall: {
     margin: 8,
   },
@@ -283,14 +283,14 @@ export const GlobalStyles = StyleSheet.create({
     padding: 24,
   },
   
-  // Divisores
+
   divider: {
     height: 1,
     backgroundColor: colors.divider,
     marginVertical: 16,
   },
   
-  // Estados especiais
+
   statusIncomplete: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -323,7 +323,7 @@ export const GlobalStyles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   
-  // Indicadores
+
   stepIndicator: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -371,7 +371,7 @@ export const GlobalStyles = StyleSheet.create({
   },
 });
 
-// Função utilitária para combinar estilos
+
 export const combineStyles = (...styles: any[]) => {
   return StyleSheet.flatten(styles);
 };

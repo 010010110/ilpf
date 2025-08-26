@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import colors from '../utils/colors';
 
 const styles = StyleSheet.create({
-  // Container styles (ViewStyle)
+
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   
-  // Card styles (ViewStyle)
+
   resultCard: {
     backgroundColor: colors.surface,
     borderRadius: 12,
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   
-  // Row styles (ViewStyle)
+
   resultRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   
-  // Button styles (ViewStyle)
+
   actionButton: {
     backgroundColor: colors.primary,
     paddingVertical: 12,
@@ -129,9 +129,9 @@ const styles = StyleSheet.create({
   },
 });
 
-// Text styles separados
+
 export const textStyles = StyleSheet.create({
-  // Text styles (TextStyle)
+
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',

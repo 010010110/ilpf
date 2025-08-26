@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const SettingsScreen = () => {
   const navigation = useNavigation();
   
-  // Estados das configurações
+
   const [valorErro, setValorErro] = useState('');
   const [carregado, setCarregado] = useState(false);
   const [notificacoesAtivas, setNotificacoesAtivas] = useState(true);
@@ -20,18 +20,18 @@ const SettingsScreen = () => {
   const [modoEscuro, setModoEscuro] = useState(false);
   const [validacaoRigida, setValidacaoRigida] = useState(true);
 
-  // Carregar configurações salvas
+
   useEffect(() => {
     const carregarConfiguracoes = () => {
       setValorErro(Config.erroPermitido.toString());
-      // Aqui você pode carregar outras configurações salvas
+
       setCarregado(true);
     };
     
     carregarConfiguracoes();
   }, []);
 
-  // Salvar erro permitido
+
   const salvarErroPermitido = () => {
     const valorNumerico = parseFloat(valorErro.replace(',', '.'));
 
@@ -56,7 +56,7 @@ const SettingsScreen = () => {
     );
   };
 
-  // Resetar banco de dados
+
   const confirmarResetBanco = () => {
     Alert.alert(
       'Resetar Banco de Dados',
@@ -86,7 +86,7 @@ const SettingsScreen = () => {
     }
   };
 
-  // Exportar dados (funcionalidade futura)
+
   const exportarDados = () => {
     Alert.alert(
       'Funcionalidade em Desenvolvimento',
@@ -95,7 +95,7 @@ const SettingsScreen = () => {
     );
   };
 
-  // Restaurar padrões
+
   const restaurarPadroes = () => {
     Alert.alert(
       'Restaurar Configurações Padrão',

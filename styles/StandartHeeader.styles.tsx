@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     minHeight: 64,
   },
   
-  // Back Button
+
   backButton: {
     marginRight: 8,
     padding: 4,
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   
-  // Title Container
+
   titleContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   
-  // Actions Container
+
   actionsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   
-  // Variações de cores para diferentes contextos
+
   headerPrimary: {
     backgroundColor: colors.primary,
   },
@@ -101,13 +101,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   
-  // Estados de interação
+
   buttonPressed: {
     backgroundColor: colors.primaryLight,
     opacity: 0.8,
   },
   
-  // Responsive adjustments
+
   titleCompact: {
     fontSize: 20,
   },

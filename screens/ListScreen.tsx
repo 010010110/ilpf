@@ -24,7 +24,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import StandardHeader from '@/components/StandartHeader';
 
-// Usando o tipo do banco de dados que permite null nas parcelas
+
 type InventoryItem = {
   id: number;
   nome_medicao: string;
@@ -50,7 +50,7 @@ const ListScreen = () => {
 
   const [dbReady, setDbReady] = useState(false);
 
-// Executa initDb apenas uma vez ao montar a tela
+
 useEffect(() => {
   const startDb = async () => {
     try {
@@ -63,7 +63,7 @@ useEffect(() => {
   startDb();
 }, []);
 
-  // Carrega os dados da base
+
   const fetchData = async () => {
     try {
       const items = await getAllItems() || [];
@@ -106,30 +106,30 @@ useEffect(() => {
 
   const navigateToEdit = (item: InventoryItem) => {
     if (item.status === 'incompleto') {
-      // Para itens incompletos, navegar para o formulário para continuar
+
       navigation.navigate('Form', { ...item });
     } else {
-      // Para itens completos, navegar para edição normal
+
       navigation.navigate('Edit', { ...item });
     }
   };
 
   const navigateToResult = (item: InventoryItem) => {
     if (item.status === 'incompleto') {
-      // Para itens incompletos, navegar para o formulário para continuar
+
       navigation.navigate('Form', { ...item });
       return;
     }
 
-    // Verificar se todas as parcelas estão preenchidas antes de calcular
+
     if (!item.parcelaPreliminar1 || !item.parcelaPreliminar2 || !item.parcelaPreliminar3 || 
         !item.parcelaPreliminar4 || !item.parcelaPreliminar5) {
-      // Se alguma parcela estiver null, tratar como incompleto
+
       navigation.navigate('Form', { ...item });
       return;
     }
 
-    // Para itens completos, calcular e mostrar resultados
+
     const areaPorArvore = calcularAreaPorArvore(
       item.distRenques,
       item.distArvores,

@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   
-  // Header
+
   header: {
     backgroundColor: colors.surface,
     elevation: 2,
@@ -34,13 +34,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   
-  // Scroll Container
+
   scrollContainer: {
     padding: 16,
     paddingBottom: 32,
   },
   
-  // App Card
+
   appCard: {
     backgroundColor: colors.surface,
     borderRadius: 16,
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   
-  // Features Card
+
   featuresCard: {
     backgroundColor: colors.surface,
     borderRadius: 16,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   
-  // Team Card
+
   teamCard: {
     backgroundColor: colors.surface,
     borderRadius: 16,
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   
-  // Institutions Card
+
   institutionsCard: {
     backgroundColor: colors.surface,
     borderRadius: 16,
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   
-  // Technical Card
+
   technicalCard: {
     backgroundColor: colors.surface, // Usando nossa paleta
     borderRadius: 16,
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   
-  // Contact Card
+
   contactCard: {
     backgroundColor: colors.secondaryLight, // Usando nossa paleta
     borderRadius: 16,
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   
-  // Footer
+
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   
-  // Dividers
+
   divider: {
     backgroundColor: colors.border, // Usando nossa paleta
     marginVertical: 12,

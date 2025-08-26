@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80, // Espaço extra no final para não cobrir o FAB
   },
   
-  // Cards principais
+
   card: {
     backgroundColor: colors.surface,
     borderRadius: 12,
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   
-  // Layout do card
+
   cardContainer: {
     flexDirection: 'row',
     alignItems: 'stretch',
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   
-  // Conteúdo dos cards
+
   cardTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   
-  // Linhas de informação (mantendo compatibilidade com código existente)
+
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     color: colors.complete.text,
   },
   
-  // Status badges
+
   statusContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   
-  // Ações dos cards
+
   cardActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   
-  // FAB (Floating Action Button)
+
   fab: {
     position: 'absolute',
     right: 16,
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   },
   
-  // Lista vazia
+
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -248,14 +248,14 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   
-  // Divisores
+
   divider: {
     height: 1,
     backgroundColor: colors.divider,
     marginVertical: 8,
   },
   
-  // Header da tela
+
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   
-  // Estados de loading
+
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

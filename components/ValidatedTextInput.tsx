@@ -40,7 +40,7 @@ const ValidatedTextInput: React.FC<ValidatedTextInputProps> = ({
   const [erro, setErro] = useState<string>('');
   const [foiTocado, setFoiTocado] = useState(false);
 
-  // Validação em tempo real
+
   useEffect(() => {
     if (foiTocado && value) {
       validarCampo(value);
@@ -48,13 +48,13 @@ const ValidatedTextInput: React.FC<ValidatedTextInputProps> = ({
   }, [value, foiTocado]);
 
   const validarCampo = (valorInput: string) => {
-    // Verificar se contém vírgula
+
     if (valorInput.includes(',')) {
       setErro('Use ponto (.) para decimais, não vírgula (,)');
       return false;
     }
 
-    // Validação básica de formato
+
     const { valido, mensagemErro } = validarCampoFormulario(
       label,
       valorInput,
@@ -66,7 +66,7 @@ const ValidatedTextInput: React.FC<ValidatedTextInputProps> = ({
       return false;
     }
 
-    // Validação de range se especificado
+
     if (valido && valorInput && (minValue !== undefined || maxValue !== undefined)) {
       const numeroValor = parseFloat(valorInput);
       const rangeValidation = validarRange(
@@ -82,7 +82,7 @@ const ValidatedTextInput: React.FC<ValidatedTextInputProps> = ({
       }
     }
 
-    // Validação de obrigatoriedade
+
     if (obrigatorio && !valorInput.trim()) {
       setErro(`${label} é obrigatório`);
       return false;
@@ -95,14 +95,14 @@ const ValidatedTextInput: React.FC<ValidatedTextInputProps> = ({
   const handleChangeText = (texto: string) => {
     setFoiTocado(true);
 
-    // Verificar vírgula e alertar imediatamente
+
     if (texto.includes(',')) {
       alertarVirgulaNaoPermitida();
-      // Substituir vírgula por ponto automaticamente
+
       texto = texto.replace(/,/g, '.');
     }
 
-    // Aplicar validação de formato
+
     const { valorLimpo } = validarCampoFormulario(label, texto, tipoValidacao);
     
     onChangeText(valorLimpo);
@@ -147,7 +147,7 @@ const ValidatedTextInput: React.FC<ValidatedTextInputProps> = ({
 
 export default ValidatedTextInput;
 
-// Componentes pré-configurados para campos específicos do formulário
+
 export const AreaInput = (props: ValidatedTextInputProps) => (
   <ValidatedTextInput
     {...props}

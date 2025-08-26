@@ -31,7 +31,7 @@ const FormScreen = () => {
   const route = useRoute();
   const params = route.params as any;
 
-  // Estados de controle
+
   const [medicaoId, setMedicaoId] = useState<number | null>(params?.id || null);
   const [isEditingIncomplete, setIsEditingIncomplete] = useState(!!params?.id && params?.status === 'incompleto');
   const [etapaAtual, setEtapaAtual] = useState<Etapa>(() => {
@@ -42,7 +42,7 @@ const FormScreen = () => {
   });
   const [instrucoesAceitas, setInstrucoesAceitas] = useState(false);
 
-  // Estados dos dados básicos
+
   const [nome_medicao, setNomeMedicao] = useState(params?.nome_medicao || '');
   const [area, setArea] = useState(params?.area ? String(params.area) : '');
   const [distRenques, setDistRenques] = useState(params?.distRenques ? String(params.distRenques) : '');
@@ -50,7 +50,7 @@ const FormScreen = () => {
   const [distLinhas, setDistLinhas] = useState(params?.distLinhas ? String(params.distLinhas) : '');
   const [distArvores, setDistArvores] = useState(params?.distArvores ? String(params.distArvores) : '');
 
-  // Estados dos resultados calculados
+
   const [areaPorArvore, setAreaPorArvore] = useState<number | null>(null);
   const [densidadeArborea, setDensidadeArborea] = useState<number | null>(null);
   const [taxaOcupacaoSolo, setTaxaOcupacaoSolo] = useState<number | null>(null);
@@ -61,7 +61,7 @@ const FormScreen = () => {
   } | null>(null);
   const [numArvoreParcela, setNumArvoreParcela] = useState<number | null>(null);
 
-  // Estados das parcelas preliminares
+
   const [parcelaPreliminar1, setParcelaPreliminar1] = useState(params?.parcelaPreliminar1 ? String(params.parcelaPreliminar1) : '');
   const [parcelaPreliminar2, setParcelaPreliminar2] = useState(params?.parcelaPreliminar2 ? String(params.parcelaPreliminar2) : '');
   const [parcelaPreliminar3, setParcelaPreliminar3] = useState(params?.parcelaPreliminar3 ? String(params.parcelaPreliminar3) : '');
@@ -69,7 +69,7 @@ const FormScreen = () => {
   const [parcelaPreliminar5, setParcelaPreliminar5] = useState(params?.parcelaPreliminar5 ? String(params.parcelaPreliminar5) : '');
 
 
-  // Função para validar entrada decimal com alerta de vírgula
+
   const handleDecimalInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
     if (texto.includes(',')) {
       alertarVirgula();
@@ -80,7 +80,7 @@ const FormScreen = () => {
     setter(valorLimpo);
   };
 
-  // Função para validar entrada inteira com alerta de vírgula
+
   const handleIntegerInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
     if (texto.includes(',')) {
       alertarVirgula();
@@ -90,24 +90,24 @@ const FormScreen = () => {
     const valorLimpo = limparEntradaInteira(texto);
     setter(valorLimpo);
   };
-  // Efeito para calcular quando linha única
+
   useEffect(() => {
     if (numLinhasRenque === '1') {
       setDistLinhas(distRenques);
     }
   }, [numLinhasRenque, distRenques]);
 
-  // Efeito para carregar dados se estiver editando uma medição incompleta
+
   useEffect(() => {
     if (isEditingIncomplete && params) {
-      // Forçar o cálculo dos resultados preliminares
+
       if (params.area && params.distRenques && params.numLinhasRenque && params.distLinhas && params.distArvores) {
         calcularResultadosPreliminares();
       }
     }
   }, [isEditingIncomplete, area, distRenques, numLinhasRenque, distLinhas, distArvores]);
 
-  // Função para calcular resultados preliminares
+
   const calcularResultadosPreliminares = () => {
     if (!area || !distRenques || !numLinhasRenque || !distLinhas || !distArvores) {
       return;
@@ -145,7 +145,7 @@ const FormScreen = () => {
     }
   };
 
-  // Validação dos campos obrigatórios da primeira etapa
+
   const validarDadosBasicos = () => {
     if (!nome_medicao.trim()) {
       Alert.alert('Campo obrigatório', 'Preencha o nome da medição.');
@@ -172,7 +172,7 @@ const FormScreen = () => {
       return false;
     }
     
-    // Validação de valores numéricos
+
     if (isNaN(parseFloat(area)) || parseFloat(area) <= 0) {
       Alert.alert('Valor inválido', 'A área deve ser um número maior que zero.');
       return false;
@@ -197,7 +197,7 @@ const FormScreen = () => {
     return true;
   };
 
-  // Função para avançar para resultados preliminares
+
   const avancarParaResultados = async () => {
     if (!validarDadosBasicos()) {
       return;
@@ -206,7 +206,7 @@ const FormScreen = () => {
     calcularResultadosPreliminares();
 
     try {
-      // Salvar dados preliminares se não estiver editando
+
       if (!isEditingIncomplete) {
         const erroPermitido = Config.erroPermitido;
         const novoId = await insertPreliminaryItem(
@@ -229,7 +229,7 @@ const FormScreen = () => {
     }
   };
 
-  // Função para avançar para contagem de parcelas
+
   const avancarParaContagem = () => {
     if (!instrucoesAceitas) {
       Alert.alert('Instruções', 'Você deve ler e aceitar as instruções para continuar.');
@@ -238,18 +238,18 @@ const FormScreen = () => {
     setEtapaAtual('contagem_parcelas');
   };
 
-  // Função para voltar para dados básicos
+
   const voltarParaDadosBasicos = () => {
     setEtapaAtual('dados_basicos');
     setInstrucoesAceitas(false);
   };
 
-  // Função para voltar para resultados preliminares
+
   const voltarParaResultados = () => {
     setEtapaAtual('resultados_preliminares');
   };
 
-  // Validação das parcelas
+
   const validarParcelas = () => {
     const parcelas = [parcelaPreliminar1, parcelaPreliminar2, parcelaPreliminar3, parcelaPreliminar4, parcelaPreliminar5];
     
@@ -267,7 +267,7 @@ const FormScreen = () => {
     return true;
   };
 
-  // Função para salvar dados finais
+
   const salvarDados = async () => {
     if (!validarParcelas()) {
       return;
@@ -277,7 +277,7 @@ const FormScreen = () => {
       const erroPermitido = Config.erroPermitido;
 
       if (medicaoId) {
-        // Completar medição existente
+
         await completeItem(
           medicaoId,
           parseInt(parcelaPreliminar1),
@@ -287,7 +287,7 @@ const FormScreen = () => {
           parseInt(parcelaPreliminar5)
         );
       } else {
-        // Criar nova medição completa (fallback)
+
         await insertItem(
           nome_medicao.trim(),
           parseFloat(area),
@@ -304,7 +304,6 @@ const FormScreen = () => {
         );
       }
 
-      // Calcular todos os resultados finais
       const areaPorArvoreCalc = areaPorArvore!;
       const densidadeArboreaCalc = densidadeArborea!;
       const totalArvores = calcularTotalArvores(parseFloat(area), densidadeArboreaCalc);
@@ -330,20 +329,20 @@ const FormScreen = () => {
         numParcelasCalculado
       );
 
-      const mediaParcelas = Math.round(
-        (parseInt(parcelaPreliminar1) +
-          parseInt(parcelaPreliminar2) +
-          parseInt(parcelaPreliminar3) +
-          parseInt(parcelaPreliminar4) +
-          parseInt(parcelaPreliminar5)) / 5
-      );
+      const mediaParcelas = (
+        parseInt(parcelaPreliminar1) +
+        parseInt(parcelaPreliminar2) +
+        parseInt(parcelaPreliminar3) +
+        parseInt(parcelaPreliminar4) +
+        parseInt(parcelaPreliminar5)
+      ) / 5;
 
       const totalArvoresMonitoradas = calcularTotalArvoresMonitoradas(
         numParcelasCalculado,
         mediaParcelas
       );
 
-      // Navegar para resultados finais
+
       navigation.navigate('Result', {
         nome_medicao: nome_medicao.trim(),
         area: parseFloat(area),
@@ -371,7 +370,7 @@ const FormScreen = () => {
         totalArvoresMonitoradas,
       });
 
-      // Limpar formulário
+
       resetFormulario();
 
     } catch (error) {
@@ -380,7 +379,7 @@ const FormScreen = () => {
     }
   };
 
-  // Função para resetar formulário
+
   const resetFormulario = () => {
     setNomeMedicao('');
     setArea('');
@@ -404,7 +403,7 @@ const FormScreen = () => {
     setIsEditingIncomplete(false);
   };
 
-  // Renderizar indicador de etapas
+
   const renderIndicadorEtapas = () => {
     const etapas = [
       { id: 'dados_basicos', nome: 'Dados Básicos', numero: 1 },
@@ -446,7 +445,7 @@ const FormScreen = () => {
     );
   };
 
-  // Renderizar etapa de dados básicos
+
   const renderDadosBasicos = () => (
     <>
       <Text style={styles.sectionTitle}>Dados Básicos da Área</Text>
@@ -517,16 +516,16 @@ const FormScreen = () => {
     </>
   );
 
-  // Renderizar etapa de resultados preliminares
+
   const renderResultadosPreliminares = () => {
-    // Validação de segurança - se os cálculos ainda não foram feitos, recalcular
+
     if (!areaPorArvore || !densidadeArborea || !taxaOcupacaoSolo || !dimensoesParcela || !numArvoreParcela) {
-      // Tentar recalcular se temos todos os dados necessários
+
       if (area && distRenques && numLinhasRenque && distLinhas && distArvores) {
         calcularResultadosPreliminares();
       }
       
-      // Se ainda não temos os resultados, mostrar loading
+
       if (!areaPorArvore || !dimensoesParcela) {
         return (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40 }}>
@@ -667,7 +666,7 @@ const FormScreen = () => {
     );
   };
 
-  // Renderizar etapa de contagem de parcelas
+
   const renderContagemParcelas = () => (
     <>
       <Text style={styles.sectionTitle}>Contagem das Parcelas Preliminares</Text>

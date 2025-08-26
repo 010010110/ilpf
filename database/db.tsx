@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system';
 
-// Definição do tipo dos itens que serão armazenados no banco
+
 type InventoryItem = {
   id: number;
   nome_medicao: string;
@@ -23,16 +23,16 @@ type InventoryItem = {
 
 const databaseName = 'v_0.2.0.db'; // Versão atualizada
 
-// Função para inicializar o banco de dados
+
 const initDb = async (): Promise<void> => {
   try {
     const db = await SQLite.openDatabaseAsync(databaseName, { useNewConnection: true });
     if (!db) throw new Error('Falha ao abrir o banco de dados');
 
-    // Define o modo do journal
+
     await db.runAsync(`PRAGMA journal_mode = WAL;`);
 
-    // Cria a tabela "inventory" com os novos campos
+
     await db.runAsync(`
       CREATE TABLE IF NOT EXISTS inventory (
         id INTEGER PRIMARY KEY NOT NULL,
@@ -54,14 +54,14 @@ const initDb = async (): Promise<void> => {
       );
     `);
 
-    // Migração para bancos existentes - adiciona coluna status se não existir
+
     try {
       await db.runAsync(`ALTER TABLE inventory ADD COLUMN status TEXT DEFAULT 'incompleto'`);
     } catch (error) {
-      // Coluna já existe, continua normalmente
+
     }
 
-    // Atualiza registros existentes que têm todas as parcelas preenchidas
+
     await db.runAsync(`
       UPDATE inventory 
       SET status = 'completo' 
@@ -79,7 +79,7 @@ const initDb = async (): Promise<void> => {
   }
 };
 
-// Função para reiniciar o banco de dados (remover e recriar)
+
 const resetDatabase = async () => {
   try {
     const dbPath = `${FileSystem.documentDirectory}SQLite/${databaseName}`;
@@ -97,7 +97,7 @@ const resetDatabase = async () => {
   }
 };
 
-// Função para inserir dados preliminares (sem as parcelas)
+
 const insertPreliminaryItem = async (
   nome_medicao: string,
   area: number,
@@ -127,7 +127,7 @@ const insertPreliminaryItem = async (
   return result.lastInsertRowId;
 };
 
-// Função para inserir um item completo no banco de dados
+
 const insertItem = async (
   nome_medicao: string,
   area: number,
@@ -167,7 +167,7 @@ const insertItem = async (
   return result.lastInsertRowId;
 };
 
-// Função para completar uma medição incompleta
+
 const completeItem = async (
   id: number,
   parcelaPreliminar1: number,
@@ -214,7 +214,7 @@ const completeItem = async (
   }
 };
 
-// Função para obter todos os itens do banco de dados
+
 const getAllItems = async (): Promise<InventoryItem[]> => {
   try {
     const db = await SQLite.openDatabaseAsync(databaseName, { useNewConnection: true });
@@ -226,7 +226,7 @@ const getAllItems = async (): Promise<InventoryItem[]> => {
   }
 };
 
-// Função para atualizar um item pelo ID
+
 const updateItem = async (
   id: number,
   nome_medicao: string,
@@ -252,7 +252,7 @@ const updateItem = async (
       throw new Error(`Item com ID ${id} não encontrado.`);
     }
 
-    // Determina o status baseado nas parcelas
+
     const hasAllParcelas = parcelaPreliminar1 !== undefined && 
                           parcelaPreliminar2 !== undefined && 
                           parcelaPreliminar3 !== undefined && 
@@ -304,20 +304,20 @@ const updateItem = async (
   }
 };
 
-// Função para deletar um item pelo ID
+
 const deleteItem = async (id: number): Promise<void> => {
   const db = await SQLite.openDatabaseAsync(databaseName, { useNewConnection: true });
   await db.runAsync('DELETE FROM inventory WHERE id = ?', [id]);
 };
 
-// Função para obter o primeiro item da tabela
+
 const getFirstItem = async (): Promise<InventoryItem | null> => {
   const db = await SQLite.openDatabaseAsync(databaseName, { useNewConnection: true });
   const firstRow = await db.getFirstAsync('SELECT * FROM inventory');
   return firstRow ? (firstRow as InventoryItem) : null;
 };
 
-// Função para obter um item por ID
+
 const getItemById = async (id: number): Promise<InventoryItem | null> => {
   const db = await SQLite.openDatabaseAsync(databaseName, { useNewConnection: true });
   const item = await db.getFirstAsync('SELECT * FROM inventory WHERE id = ?', [id]);

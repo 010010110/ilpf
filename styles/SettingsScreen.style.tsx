@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   
-  // Header
+
   header: {
     backgroundColor: colors.surface,
     elevation: 2,
@@ -34,13 +34,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   
-  // Scroll Container
+
   scrollContainer: {
     padding: 16,
     paddingBottom: 32,
   },
   
-  // Cards
+
   card: {
     backgroundColor: colors.surface,
     borderRadius: 12,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   
-  // Text Input
+
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   
-  // Save Button
+
   saveButton: {
     backgroundColor: colors.primary,
     borderRadius: 8,
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     color: colors.onPrimary,
   },
   
-  // Settings Items
+
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   
-  // Action Buttons
+
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   
-  // Info Rows
+
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -204,13 +204,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   
-  // Dividers
+
   divider: {
     backgroundColor: colors.border,
     marginVertical: 8,
   },
   
-  // Footer
+
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   
-  // Animations and interactions
+
   cardPressed: {
     opacity: 0.7,
     transform: [{ scale: 0.98 }],
