@@ -73,7 +73,7 @@ const FormScreen = () => {
   const handleDecimalInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
     if (texto.includes(',')) {
       alertarVirgula();
-      setter(0)
+      setter('0')
       return 0;
     }
     const valorLimpo = limparEntradaDecimal(texto);
@@ -84,7 +84,7 @@ const FormScreen = () => {
   const handleIntegerInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
     if (texto.includes(',')) {
       alertarVirgula();
-      setter(0)
+      setter('0')
       return;
     }
     const valorLimpo = limparEntradaInteira(texto);

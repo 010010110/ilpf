@@ -46,7 +46,7 @@ const EditScreen = () => {
     const handleDecimalInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
       if (texto.includes(',')) {
         alertarVirgula();
-        setter(0)
+        setter('0')
         return 0;
       }
       const valorLimpo = limparEntradaDecimal(texto);
@@ -57,7 +57,7 @@ const EditScreen = () => {
     const handleIntegerInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
       if (texto.includes(',')) {
         alertarVirgula();
-        setter(0)
+        setter('0')
         return;
       }
       const valorLimpo = limparEntradaInteira(texto);
