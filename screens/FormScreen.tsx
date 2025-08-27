@@ -31,7 +31,6 @@ const FormScreen = () => {
   const route = useRoute();
   const params = route.params as any;
 
-
   const [medicaoId, setMedicaoId] = useState<number | null>(params?.id || null);
   const [isEditingIncomplete, setIsEditingIncomplete] = useState(!!params?.id && params?.status === 'incompleto');
   const [etapaAtual, setEtapaAtual] = useState<Etapa>(() => {
@@ -42,14 +41,12 @@ const FormScreen = () => {
   });
   const [instrucoesAceitas, setInstrucoesAceitas] = useState(false);
 
-
   const [nome_medicao, setNomeMedicao] = useState(params?.nome_medicao || '');
   const [area, setArea] = useState(params?.area ? String(params.area) : '');
   const [distRenques, setDistRenques] = useState(params?.distRenques ? String(params.distRenques) : '');
   const [numLinhasRenque, setNumLinhasRenque] = useState(params?.numLinhasRenque ? String(params.numLinhasRenque) : '');
   const [distLinhas, setDistLinhas] = useState(params?.distLinhas ? String(params.distLinhas) : '');
   const [distArvores, setDistArvores] = useState(params?.distArvores ? String(params.distArvores) : '');
-
 
   const [areaPorArvore, setAreaPorArvore] = useState<number | null>(null);
   const [densidadeArborea, setDensidadeArborea] = useState<number | null>(null);
@@ -61,30 +58,26 @@ const FormScreen = () => {
   } | null>(null);
   const [numArvoreParcela, setNumArvoreParcela] = useState<number | null>(null);
 
-
   const [parcelaPreliminar1, setParcelaPreliminar1] = useState(params?.parcelaPreliminar1 ? String(params.parcelaPreliminar1) : '');
   const [parcelaPreliminar2, setParcelaPreliminar2] = useState(params?.parcelaPreliminar2 ? String(params.parcelaPreliminar2) : '');
   const [parcelaPreliminar3, setParcelaPreliminar3] = useState(params?.parcelaPreliminar3 ? String(params.parcelaPreliminar3) : '');
   const [parcelaPreliminar4, setParcelaPreliminar4] = useState(params?.parcelaPreliminar4 ? String(params.parcelaPreliminar4) : '');
   const [parcelaPreliminar5, setParcelaPreliminar5] = useState(params?.parcelaPreliminar5 ? String(params.parcelaPreliminar5) : '');
 
-
-
   const handleDecimalInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
     if (texto.includes(',')) {
       alertarVirgula();
-      setter('0')
+      setter('');
       return 0;
     }
     const valorLimpo = limparEntradaDecimal(texto);
     setter(valorLimpo);
   };
 
-
   const handleIntegerInput = (texto: string, setter: (value: string) => void, nomeCampo: string) => {
     if (texto.includes(',')) {
       alertarVirgula();
-      setter('0')
+      setter('');
       return;
     }
     const valorLimpo = limparEntradaInteira(texto);
@@ -97,16 +90,13 @@ const FormScreen = () => {
     }
   }, [numLinhasRenque, distRenques]);
 
-
   useEffect(() => {
     if (isEditingIncomplete && params) {
-
       if (params.area && params.distRenques && params.numLinhasRenque && params.distLinhas && params.distArvores) {
         calcularResultadosPreliminares();
       }
     }
   }, [isEditingIncomplete, area, distRenques, numLinhasRenque, distLinhas, distArvores]);
-
 
   const calcularResultadosPreliminares = () => {
     if (!area || !distRenques || !numLinhasRenque || !distLinhas || !distArvores) {
@@ -120,18 +110,22 @@ const FormScreen = () => {
         parseInt(numLinhasRenque),
         parseFloat(distLinhas)
       );
+
       const densidadeCalculada = calcularDensidadeArborea(areaCalculada);
+
       const taxaCalculada = calcularTaxaOcupacaoSolo(
         parseFloat(distRenques),
         parseInt(numLinhasRenque),
         parseFloat(distLinhas)
       );
+
       const dimensoes = calcularDimensoesParcela(
         parseFloat(distArvores),
         parseFloat(distRenques),
         parseInt(numLinhasRenque),
         parseFloat(distLinhas)
       );
+
       const arvoresPorParcela = calcularNumArvoresParcelas(dimensoes.areaTotal, areaCalculada);
 
       setAreaPorArvore(areaCalculada);
@@ -139,12 +133,12 @@ const FormScreen = () => {
       setTaxaOcupacaoSolo(taxaCalculada);
       setDimensoesParcela(dimensoes);
       setNumArvoreParcela(arvoresPorParcela);
+
     } catch (error) {
       console.error('Erro ao calcular resultados preliminares:', error);
       Alert.alert('Erro', 'Erro nos cálculos. Verifique os dados inseridos.');
     }
   };
-
 
   const validarDadosBasicos = () => {
     if (!nome_medicao.trim()) {
@@ -171,7 +165,6 @@ const FormScreen = () => {
       Alert.alert('Campo obrigatório', 'Preencha a distância entre árvores.');
       return false;
     }
-    
 
     if (isNaN(parseFloat(area)) || parseFloat(area) <= 0) {
       Alert.alert('Valor inválido', 'A área deve ser um número maior que zero.');
@@ -193,10 +186,9 @@ const FormScreen = () => {
       Alert.alert('Valor inválido', 'A distância entre árvores deve ser um número maior que zero.');
       return false;
     }
-    
+
     return true;
   };
-
 
   const avancarParaResultados = async () => {
     if (!validarDadosBasicos()) {
@@ -206,7 +198,6 @@ const FormScreen = () => {
     calcularResultadosPreliminares();
 
     try {
-
       if (!isEditingIncomplete) {
         const erroPermitido = Config.erroPermitido;
         const novoId = await insertPreliminaryItem(
@@ -229,7 +220,6 @@ const FormScreen = () => {
     }
   };
 
-
   const avancarParaContagem = () => {
     if (!instrucoesAceitas) {
       Alert.alert('Instruções', 'Você deve ler e aceitar as instruções para continuar.');
@@ -238,21 +228,18 @@ const FormScreen = () => {
     setEtapaAtual('contagem_parcelas');
   };
 
-
   const voltarParaDadosBasicos = () => {
     setEtapaAtual('dados_basicos');
     setInstrucoesAceitas(false);
   };
 
-
   const voltarParaResultados = () => {
     setEtapaAtual('resultados_preliminares');
   };
 
-
   const validarParcelas = () => {
     const parcelas = [parcelaPreliminar1, parcelaPreliminar2, parcelaPreliminar3, parcelaPreliminar4, parcelaPreliminar5];
-    
+
     for (let i = 0; i < parcelas.length; i++) {
       if (!parcelas[i].trim()) {
         Alert.alert('Campo obrigatório', `Preencha a parcela preliminar ${i + 1}.`);
@@ -263,10 +250,9 @@ const FormScreen = () => {
         return false;
       }
     }
-    
+
     return true;
   };
-
 
   const salvarDados = async () => {
     if (!validarParcelas()) {
@@ -277,7 +263,6 @@ const FormScreen = () => {
       const erroPermitido = Config.erroPermitido;
 
       if (medicaoId) {
-
         await completeItem(
           medicaoId,
           parseInt(parcelaPreliminar1),
@@ -287,7 +272,6 @@ const FormScreen = () => {
           parseInt(parcelaPreliminar5)
         );
       } else {
-
         await insertItem(
           nome_medicao.trim(),
           parseFloat(area),
@@ -342,7 +326,6 @@ const FormScreen = () => {
         mediaParcelas
       );
 
-
       navigation.navigate('Result', {
         nome_medicao: nome_medicao.trim(),
         area: parseFloat(area),
@@ -370,7 +353,6 @@ const FormScreen = () => {
         totalArvoresMonitoradas,
       });
 
-
       resetFormulario();
 
     } catch (error) {
@@ -378,7 +360,6 @@ const FormScreen = () => {
       Alert.alert('Erro', 'Ocorreu um erro ao salvar os dados. Tente novamente.');
     }
   };
-
 
   const resetFormulario = () => {
     setNomeMedicao('');
@@ -402,7 +383,6 @@ const FormScreen = () => {
     setMedicaoId(null);
     setIsEditingIncomplete(false);
   };
-
 
   const renderIndicadorEtapas = () => {
     const etapas = [
@@ -444,7 +424,6 @@ const FormScreen = () => {
       </View>
     );
   };
-
 
   const renderDadosBasicos = () => (
     <>
@@ -516,15 +495,11 @@ const FormScreen = () => {
     </>
   );
 
-
   const renderResultadosPreliminares = () => {
-
     if (!areaPorArvore || !densidadeArborea || !taxaOcupacaoSolo || !dimensoesParcela || !numArvoreParcela) {
-
       if (area && distRenques && numLinhasRenque && distLinhas && distArvores) {
         calcularResultadosPreliminares();
       }
-      
 
       if (!areaPorArvore || !dimensoesParcela) {
         return (
@@ -532,7 +507,7 @@ const FormScreen = () => {
             <Text style={{ color: colors.text.secondary, textAlign: 'center', marginBottom: 16 }}>
               Calculando resultados preliminares...
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => calcularResultadosPreliminares()}
               style={[styles.buttonSecondary, { marginTop: 16 }]}
             >
@@ -650,7 +625,7 @@ const FormScreen = () => {
             onPress={avancarParaContagem}
             style={[
               styles.button,
-              { 
+              {
                 flex: 1,
                 backgroundColor: instrucoesAceitas ? '#859B48' : '#cccccc'
               }
@@ -666,7 +641,6 @@ const FormScreen = () => {
     );
   };
 
-
   const renderContagemParcelas = () => (
     <>
       <Text style={styles.sectionTitle}>Contagem das Parcelas Preliminares</Text>
@@ -680,21 +654,20 @@ const FormScreen = () => {
           label={`Parcela Preliminar ${numero} (número de árvores)`}
           value={
             numero === 1 ? parcelaPreliminar1 :
-            numero === 2 ? parcelaPreliminar2 :
-            numero === 3 ? parcelaPreliminar3 :
-            numero === 4 ? parcelaPreliminar4 :
-            parcelaPreliminar5
+              numero === 2 ? parcelaPreliminar2 :
+                numero === 3 ? parcelaPreliminar3 :
+                  numero === 4 ? parcelaPreliminar4 :
+                    parcelaPreliminar5
           }
           onChangeText={
             numero === 1 ? setParcelaPreliminar1 :
-            numero === 2 ? setParcelaPreliminar2 :
-            numero === 3 ? setParcelaPreliminar3 :
-            numero === 4 ? setParcelaPreliminar4 :
-            setParcelaPreliminar5
+              numero === 2 ? setParcelaPreliminar2 :
+                numero === 3 ? setParcelaPreliminar3 :
+                  numero === 4 ? setParcelaPreliminar4 :
+                    setParcelaPreliminar5
           }
           keyboardType="number-pad"
           style={styles.input}
-
           placeholder="Ex: 8"
         />
       ))}
@@ -716,11 +689,12 @@ const FormScreen = () => {
       </View>
     </>
   );
-    const getHeaderTitle = () => {
+
+  const getHeaderTitle = () => {
     if (isEditingIncomplete) {
       return "Completar Medição";
     }
-    
+
     switch (etapaAtual) {
       case 'dados_basicos':
         return "Nova Medição";
@@ -758,15 +732,19 @@ const FormScreen = () => {
         return "clipboard-list";
     }
   };
+
   const headerActions = [
-      {
-        icon: 'help-circle-outline',
-        label: 'Ajuda',
-        onPress: () => {
-          Alert.alert('Ajuda', 'Para realizar o preenchimeneto do formulario de forma mais intuitiva, ele foi separado nas seguintes etapas, 1) preencher as informações basicas sobre a área a ser invventariada, 2) deve ler com atenção as instruções e realizar as etapas descritas nela, 3) deve finalizar de preencher as informações com os dados obtidos atravez da etapa anterior');
-        },
-      }
-    ];
+    {
+      icon: 'help-circle-outline',
+      label: 'Ajuda',
+      onPress: () => {
+        Alert.alert(
+          'Ajuda',
+          'Para realizar o preenchimento do formulário de forma mais intuitiva ele foi separado nas seguintes etapas:\n\n1) Preencher as informações básicas sobre a área a ser inventariada.\n2) Ler com atenção as instruções e realizar as etapas descritas.\n3) Finalizar o preenchimento das informações com os dados obtidos na etapa anterior.'
+        );
+      },
+    }
+  ];
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -780,7 +758,7 @@ const FormScreen = () => {
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         {renderIndicadorEtapas()}
-        
+
         {etapaAtual === 'dados_basicos' && renderDadosBasicos()}
         {etapaAtual === 'resultados_preliminares' && renderResultadosPreliminares()}
         {etapaAtual === 'contagem_parcelas' && renderContagemParcelas()}

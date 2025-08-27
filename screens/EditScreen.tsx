@@ -98,22 +98,6 @@ const EditScreen = () => {
     }
 
     try {
-      console.log('Valores enviados para updateItem:', {
-        id: params.id,
-        nome: nomeMedicao,
-        area: parseFloat(area),
-        renques: parseFloat(distRenques),
-        linhasRenque: parseInt(numLinhasRenque),
-        distLinhas: parseFloat(distLinhas),
-        distArvores: parseFloat(distArvores),
-        erroPermitido,
-        parcela1: parcela1 ? parseInt(parcela1) : undefined,
-        parcela2: parcela2 ? parseInt(parcela2) : undefined,
-        parcela3: parcela3 ? parseInt(parcela3) : undefined,
-        parcela4: parcela4 ? parseInt(parcela4) : undefined,
-        parcela5: parcela5 ? parseInt(parcela5) : undefined,
-      });
-
       await updateItem(
         params.id,
         nomeMedicao,
