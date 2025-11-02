@@ -139,6 +139,17 @@ const FormScreen = () => {
     }
   }, [isEditingIncomplete, area, distRenques, numLinhasRenque, distLinhas, distArvores]);
 
+  // Efeito para garantir que os resultados preliminares são calculados na montagem
+  useEffect(() => {
+    if (isEditingIncomplete || (etapaAtual === 'contagem_parcelas' && !areaPorArvore)) {
+      const allFieldsPresent = area && distRenques && numLinhasRenque && distLinhas && distArvores;
+      if (allFieldsPresent) {
+        calcularResultadosPreliminares();
+      }
+    }
+  }, [etapaAtual]);
+
+
   const calcularResultadosPreliminares = () => {
     if (!area || !distRenques || !numLinhasRenque || !distLinhas || !distArvores) {
       return;
@@ -368,6 +379,8 @@ const FormScreen = () => {
     const numParcelasFinal = totalParcelasRequeridas;
     
     // 2. O banco de dados só salva 5 parcelas. Salvamos as 5 primeiras contagens ou a média (caso não haja 5)
+    // Usamos o operador de coalescência nula (??) para garantir que, se a contagem real não existir (além da 5ª),
+    // usaremos a média total. Se for a primeira iteração, as 5 iniciais estão presentes.
     const p1 = contagensInt[0] ?? Math.round(mediaParcelas);
     const p2 = contagensInt[1] ?? Math.round(mediaParcelas);
     const p3 = contagensInt[2] ?? Math.round(mediaParcelas);
@@ -596,12 +609,8 @@ const FormScreen = () => {
   );
 
   const renderResultadosPreliminares = () => {
+    
     if (!areaPorArvore || !densidadeArborea || !taxaOcupacaoSolo || !dimensoesParcela || !numArvoreParcela) {
-        // Recalcula se o usuário voltou para essa tela sem os resultados no estado
-        useEffect(() => {
-            calcularResultadosPreliminares();
-        }, []); 
-
         return (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40 }}>
             <Text style={{ color: colors.text.secondary, textAlign: 'center', marginBottom: 16 }}>
@@ -767,11 +776,6 @@ const FormScreen = () => {
             setter = (text: string) => handleExtraPlotInput(text, index - 5);
           }
 
-          // Se veio do EditScreen (isEditingIncomplete), as 5 primeiras parcelas já estão preenchidas.
-          const isExtraPlot = numero > 5;
-          const isFirstTime = totalParcelasRequeridas === 5 && !isEditingIncomplete;
-
-
           return (
             <TextInput
               key={numero}
@@ -781,8 +785,6 @@ const FormScreen = () => {
               keyboardType="number-pad"
               style={styles.input}
               placeholder="Ex: 8"
-              // Se não é a primeira vez e não é uma parcela extra, o campo deve estar preenchido (se veio do EditScreen) e pode ser editado
-              // Caso contrário, o campo é sempre editável.
             />
           );
         })}
