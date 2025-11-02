@@ -16,6 +16,7 @@ export type RootStackParamList = {
     status?: 'incompleto' | 'completo';
     created_at?: string;
     updated_at?: string;
+    totalParcelasRequeridas?: number;
   };
   List: undefined;
   About: undefined;
@@ -91,6 +92,7 @@ export type MainTabsParamList = {
     status?: 'incompleto' | 'completo';
     created_at?: string;
     updated_at?: string;
+    totalParcelasRequeridas?: number;
   };
   Result: {
     nome_medicao: string;

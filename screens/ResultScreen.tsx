@@ -130,7 +130,7 @@ const ResultScreen = () => {
               </View>
 
               <View style={styles.resultRow}>
-                <Text style={textStyles.label}>Árvores monitoradas:</Text>
+                <Text style={textStyles.label}>Árvores à serem medidas:</Text>
                 <Text style={textStyles.value}>{totalArvoresMonitoradas}</Text>
               </View>
 
